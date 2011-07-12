@@ -18,7 +18,5 @@ public class SpecialPlayerListener extends PlayerListener {
             event.setJoinMessage(null);
             player.setDisplayName(null);
         }
-
-        //super.onPlayerJoin(event);    //To change body of overridden methods use File | Settings | File Templates.
     }
 }
