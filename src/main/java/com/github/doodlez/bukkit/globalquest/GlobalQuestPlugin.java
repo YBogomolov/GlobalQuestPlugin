@@ -18,6 +18,7 @@ import static org.bukkit.event.Event.Type;
 public class GlobalQuestPlugin extends JavaPlugin {
     private final static SpecialPlayerListener playerListener = new SpecialPlayerListener();
     private final static SpecialBlockListener blockListener = new SpecialBlockListener();
+    public static String playerNameToObserve;
 
     @Override
     public void onDisable() {
@@ -49,7 +50,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
      */
     private void readConfiguration() {
         getConfiguration().load();
-        SpecialPlayerListener.playerNameToObserve = getConfiguration().getString("GQP.PlayerNameToObserve", "Sinister");
+        playerNameToObserve = getConfiguration().getString("GQP.PlayerNameToObserve", "Sinister");
         getConfiguration().save();
     }
 }

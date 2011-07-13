@@ -24,11 +24,6 @@ package com.github.doodlez.bukkit.globalquest;
  */
 public class SpecialPlayerListener extends PlayerListener {
     /**
-     * Player's name for whom special treats will be applied.
-     */
-    public static String playerNameToObserve;
-
-    /**
      * Handles PLAYER_JOIN event. If player is special (e.g., Sinister),
      * then make him and his actions invisible to others.
      * @param event Player join event.
@@ -37,7 +32,7 @@ public class SpecialPlayerListener extends PlayerListener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (player.getName().equals(playerNameToObserve)) {
+        if (player.getName().equals(GlobalQuestPlugin.playerNameToObserve)) {
             System.out.print(player.getName() + " joined the game.");
             System.out.print("Let's make him disappear...");
             event.setJoinMessage(null);
@@ -79,7 +74,7 @@ public class SpecialPlayerListener extends PlayerListener {
             event.setQuitMessage(null);
 
             EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
-            entityPlayer.name = playerNameToObserve;
+            entityPlayer.name = GlobalQuestPlugin.playerNameToObserve;
         }
     }
 
