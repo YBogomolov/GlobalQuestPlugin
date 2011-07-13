@@ -74,9 +74,12 @@ public class SpecialPlayerListener extends PlayerListener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        if (player.getName().equals(playerNameToObserve)) {
+        if (player.getName().equals("")) {
             System.out.print(player.getName() + " left the game.");
             event.setQuitMessage(null);
+
+            EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
+            entityPlayer.name = playerNameToObserve;
         }
     }
 
