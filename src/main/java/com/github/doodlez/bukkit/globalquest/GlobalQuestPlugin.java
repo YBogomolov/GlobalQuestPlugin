@@ -24,7 +24,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
 
     // Public fields:
     public static String playerNameToObserve;
-    public static Coordinates airbaseCoordinates;
+    public static Coordinates airbaseCoordinates = new Coordinates();
 
     /**
      * Occurs when plugin is disabled (unloaded from Bukkit).

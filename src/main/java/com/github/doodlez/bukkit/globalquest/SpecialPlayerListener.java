@@ -17,11 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 /**
- * Class tha handles special mod-like player, needed for Global Quest.
+ * Class that handles special mod-like player Isaak Breen, needed for Global Quest.
  */
 public class SpecialPlayerListener extends PlayerListener {
     /**
-     * Handles PLAYER_JOIN event. If player is special (Herobrine),
+     * Handles PLAYER_JOIN event. If player is special (Isaak Breen),
      * then make him and his actions invisible to others.
      *
      * @param event Player join event.
@@ -33,7 +33,7 @@ public class SpecialPlayerListener extends PlayerListener {
         if (player.getName().equals(GlobalQuestPlugin.playerNameToObserve)) {
             System.out.print(player.getName() + " joined the game.");
 
-            // Let's make Herobrine invisible to others — i.e. no name over the head, no name in chat.
+            // Let's make Isaak Breen invisible to others — i.e. no name over the head, no name in chat.
             System.out.print("Let's make him disappear...");
             event.setJoinMessage(null);
             player.setDisplayName("");
@@ -112,7 +112,7 @@ public class SpecialPlayerListener extends PlayerListener {
     }
 
     /**
-     * Handles PLAYER_RESPAWN event. Gives Herobrine infinite arrow and a bow.
+     * Handles PLAYER_RESPAWN event. Gives Isaak Breen infinite arrow and a bow.
      * @param event PlayerRespawnEvent.
      */
     @Override

@@ -13,14 +13,14 @@ import org.bukkit.event.entity.EntityListener;
 
 public class SpecialEntityListener extends EntityListener {
     /**
-     * Handles ENTITY_DAMAGE event. Sets appropriate damage to Herobrine.
+     * Handles ENTITY_DAMAGE event. Sets appropriate damage to Isaak Breen.
      * @param event EntityDamageEvent.
      */
     @Override
     public void onEntityDamage(EntityDamageEvent event) {
         // Only process when both damager and damagee are Entities.
         if (event instanceof EntityDamageByEntityEvent) {
-            // Let's set appropriae damage values for Herobrine if he attacks player
+            // Let's set appropriae damage values for Isaak Breen if he attacks player
             // or he is attacked by player.
             if (event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) {
                 EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
@@ -33,13 +33,18 @@ public class SpecialEntityListener extends EntityListener {
                     int previousDamage = e.getDamage();
 
                     // Now we have options:
-                    // 1. If Herobrine is damager, he sould deal DOUBLE damage:
+                    // 0. If he is stupid and firing arrows at himself — make no damage:
+                    if ((damager.getName().equals(damagee.getName())) && (damager.getName().equals(""))) {
+                        e.setDamage(0);
+                        return;
+                    }
+                    // 1. If Isaak Breen is damager, he sould deal DOUBLE damage:
                     if (damager.getName().equals("")) {
                         e.setDamage(previousDamage * 2);
                         return;
                     }
 
-                    // 2. If Herobrine is the damagee, hesould receive HALF of damage:
+                    // 2. If Isaak Breen is the damagee, hesould receive HALF of damage:
                     if (damagee.getName().equals("")) {
                         e.setDamage(previousDamage / 2);
                         return;
@@ -58,7 +63,7 @@ public class SpecialEntityListener extends EntityListener {
                     // Original damage value:
                     int previousDamage = e.getDamage();
 
-                     // If Herobrine is the damagee, hesould receive HALF of damage:
+                     // If Isaak Breen is the damagee, hesould receive HALF of damage:
                     if (damagee.getName().equals("")) {
                         e.setDamage(previousDamage / 2);
                     }

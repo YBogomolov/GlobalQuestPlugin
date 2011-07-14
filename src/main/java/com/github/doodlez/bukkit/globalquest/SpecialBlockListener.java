@@ -14,7 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class SpecialBlockListener extends BlockListener {
     /**
-     * Handles BLOCK_PLACE event. Prohibits Herobrine to place blocks.
+     * Handles BLOCK_PLACE event. Prohibits Isaak Breen to place blocks.
      * @param event BlockPlaceEvent.
      */
     @Override
@@ -24,16 +24,21 @@ public class SpecialBlockListener extends BlockListener {
         System.out.print("Player \"" + player.getName() + "\" is placing a block.");
         if (player.getName().equals("")){
             Coordinates chunkCenterCoord = Coordinates.GetChunkCenterCoordinates(event.getBlockPlaced());
+            System.out.print("Chunk coord: " + chunkCenterCoord.X + ", " + chunkCenterCoord.Z);
 
-            if (!((GlobalQuestPlugin.airbaseCoordinates.X == chunkCenterCoord.X)
-                && (GlobalQuestPlugin.airbaseCoordinates.Z == chunkCenterCoord.Z))) {
+            if ((GlobalQuestPlugin.airbaseCoordinates.X != chunkCenterCoord.X)
+                && (GlobalQuestPlugin.airbaseCoordinates.Z != chunkCenterCoord.Z)) {
                 event.setBuild(false);
+            }
+            else {
+                System.out.print("He's on his base, thus allowed to build.");
+                event.setBuild(true);
             }
         }
     }
 
     /**
-     * Handles BLOCK_BREAK event. Prohibites Herobrine to break blocks.
+     * Handles BLOCK_BREAK event. Prohibites Isaak Breen to break blocks.
      * @param event BlockBreakEvent.
      */
     @Override
@@ -44,9 +49,13 @@ public class SpecialBlockListener extends BlockListener {
         if (player.getName().equals("")) {
             Coordinates chunkCenterCoord = Coordinates.GetChunkCenterCoordinates(event.getBlock());
 
-            if (!((GlobalQuestPlugin.airbaseCoordinates.X == chunkCenterCoord.X)
-                && (GlobalQuestPlugin.airbaseCoordinates.Z == chunkCenterCoord.Z))) {
+            if ((GlobalQuestPlugin.airbaseCoordinates.X != chunkCenterCoord.X)
+                && (GlobalQuestPlugin.airbaseCoordinates.Z != chunkCenterCoord.Z)) {
                 event.setCancelled(true);
+            }
+            else {
+                System.out.print("He's on his base, thus allowed to break.");
+                event.setCancelled(false);
             }
         }
     }
