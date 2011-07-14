@@ -18,14 +18,22 @@ import static org.bukkit.event.Event.Type;
 public class GlobalQuestPlugin extends JavaPlugin {
     private final static SpecialPlayerListener playerListener = new SpecialPlayerListener();
     private final static SpecialBlockListener blockListener = new SpecialBlockListener();
+    private final static SpecialEntityListener entityListener = new SpecialEntityListener();
+
     public static String playerNameToObserve;
 
+    /**
+     * Occurs when plugin is disabled (unloaded from Bukkit).
+     */
     @Override
     public void onDisable() {
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.print(pdfFile.getName() + " version " + pdfFile.getVersion() + " is disabled.");
     }
 
+    /**
+     * Occurs when plugin is loaded into Bukkit.
+     */
     @Override
     public void onEnable() {
         PluginManager manager = getServer().getPluginManager();
@@ -38,6 +46,9 @@ public class GlobalQuestPlugin extends JavaPlugin {
         // Block events:
         manager.registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
         manager.registerEvent(Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
+
+        // Entity events:
+        manager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
 
         readConfiguration();
 

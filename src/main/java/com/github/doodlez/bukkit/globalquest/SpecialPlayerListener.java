@@ -24,7 +24,7 @@ package com.github.doodlez.bukkit.globalquest;
  */
 public class SpecialPlayerListener extends PlayerListener {
     /**
-     * Handles PLAYER_JOIN event. If player is special (e.g., Sinister),
+     * Handles PLAYER_JOIN event. If player is special (Herobrine),
      * then make him and his actions invisible to others.
      * @param event Player join event.
      */
@@ -34,6 +34,8 @@ public class SpecialPlayerListener extends PlayerListener {
 
         if (player.getName().equals(GlobalQuestPlugin.playerNameToObserve)) {
             System.out.print(player.getName() + " joined the game.");
+
+            // Let's make Herobrine invisible to others — i.e. no name over the head, no name in chat.
             System.out.print("Let's make him disappear...");
             event.setJoinMessage(null);
             player.setDisplayName("");
@@ -47,6 +49,7 @@ public class SpecialPlayerListener extends PlayerListener {
                 }
             }
 
+            // He sould have infinite arrows and a bow to defend himself.
             System.out.print("Let's give him infinite arrows and a bow.");
             PlayerInventory inventory = player.getInventory();
 

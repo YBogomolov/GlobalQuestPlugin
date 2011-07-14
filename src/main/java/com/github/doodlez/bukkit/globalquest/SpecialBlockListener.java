@@ -12,7 +12,10 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class SpecialBlockListener extends BlockListener {
-
+    /**
+     * Handles BLOCK_PLACE event. Prohibits Herobrine to place blocks.
+     * @param event BlockPlaceEvent.
+     */
     @Override
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
@@ -23,6 +26,10 @@ public class SpecialBlockListener extends BlockListener {
         }
     }
 
+    /**
+     * Handles BLOCK_BREAK event. Prohibites Herobrine to break blocks.
+     * @param event BlockBreakEvent.
+     */
     @Override
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
