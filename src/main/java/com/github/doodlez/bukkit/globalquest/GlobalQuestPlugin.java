@@ -5,6 +5,7 @@
  */
 package com.github.doodlez.bukkit.globalquest;
  
+import com.github.doodlez.bukkit.globalquest.utilities.Coordinates;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -16,11 +17,14 @@ import static org.bukkit.event.Event.Type;
  * Main plugin class.
  */
 public class GlobalQuestPlugin extends JavaPlugin {
+    // Private fields:
     private final static SpecialPlayerListener playerListener = new SpecialPlayerListener();
     private final static SpecialBlockListener blockListener = new SpecialBlockListener();
     private final static SpecialEntityListener entityListener = new SpecialEntityListener();
 
+    // Public fields:
     public static String playerNameToObserve;
+    public static Coordinates airbaseCoordinates;
 
     /**
      * Occurs when plugin is disabled (unloaded from Bukkit).
@@ -42,6 +46,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
         manager.registerEvent(Type.PLAYER_JOIN, playerListener, Priority.Normal, this);
         manager.registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
         manager.registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Highest, this);
+        manager.registerEvent(Type.PLAYER_RESPAWN, playerListener, Priority.Normal, this);
 
         // Block events:
         manager.registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
@@ -62,6 +67,9 @@ public class GlobalQuestPlugin extends JavaPlugin {
     private void readConfiguration() {
         getConfiguration().load();
         playerNameToObserve = getConfiguration().getString("GQP.PlayerNameToObserve", "Sinister");
+        airbaseCoordinates.X = getConfiguration().getInt("GQP.AirBaseX", 0);
+        airbaseCoordinates.Y = getConfiguration().getInt("GQP.AirBaseY", 0);
+        airbaseCoordinates.Z = getConfiguration().getInt("GQP.AirBaseZ", 0);
         getConfiguration().save();
     }
 }
