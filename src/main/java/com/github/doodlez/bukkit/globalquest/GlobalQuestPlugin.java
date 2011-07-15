@@ -77,6 +77,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
         // Strikes lightning at target block if source block is not broken:
         Runnable task = new Runnable() {
             public void run() {
+                boolean previousHasStorm = theWorld.hasStorm();
                 boolean allBlocksDestroyed = true;
                 for (LightningPairedBlocks blocks: lightningPairedBlocksList) {
                     Block block = theWorld.getBlockAt(blocks.getSourceBlock());
@@ -93,7 +94,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
                 }
 
                 if (allBlocksDestroyed)
-                    theWorld.setStorm(false);
+                    theWorld.setStorm(previousHasStorm);
             }
         };
         this.getServer().getScheduler().scheduleSyncRepeatingTask(this, task, 0, lightningFrequency);
