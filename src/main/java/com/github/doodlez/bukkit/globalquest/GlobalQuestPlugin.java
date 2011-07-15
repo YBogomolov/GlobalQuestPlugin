@@ -5,8 +5,7 @@
  */
 package com.github.doodlez.bukkit.globalquest;
 
- import com.github.doodlez.bukkit.globalquest.utilities.Coordinates;
-import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
+ import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -32,7 +31,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
     // Public fields:
     public static boolean isDebugEnabled = false;
     public static String playerNameToObserve;
-    public static Coordinates airbaseCoordinates = new Coordinates();
+    public static Location airbaseCoordinates;
     public static ArrayList<LightningPairedBlocks> lightningPairedBlocksList = new ArrayList<LightningPairedBlocks>();
     public static int lightningFrequency;
     public static int lightningSourceId;
@@ -51,14 +50,13 @@ public class GlobalQuestPlugin extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        readConfiguration();
-
         System.out.print("World list:");
         for (World world: getServer().getWorlds()){
             System.out.print(world.getName());
         }
 
         theWorld = this.getServer().getWorld("world");
+        readConfiguration();
 
         PluginManager manager = getServer().getPluginManager();
 
@@ -81,20 +79,16 @@ public class GlobalQuestPlugin extends JavaPlugin {
             public void run() {
                 boolean allBlocksDestroyed = true;
                 for (LightningPairedBlocks blocks: lightningPairedBlocksList) {
-                    Block block = theWorld.getBlockAt(blocks.getSourceBlock().X,
-                                                      blocks.getSourceBlock().Y,
-                                                      blocks.getSourceBlock().Z);
+                    Block block = theWorld.getBlockAt(blocks.getSourceBlock());
                     if (block.getTypeId() == lightningSourceId) {
                         allBlocksDestroyed = false;
                         theWorld.setStorm(true);
                         if (isDebugEnabled) {
-                            System.out.print("Lightning strike at " + blocks.getTargetBlock().X + ", " +
-                                                                      blocks.getTargetBlock().Y + ", " +
-                                                                      blocks.getTargetBlock().Z);
+                            System.out.print("Lightning strike at " + blocks.getTargetBlock().getX() + ", " +
+                                                                      blocks.getTargetBlock().getY() + ", " +
+                                                                      blocks.getTargetBlock().getZ());
                         }
-                        theWorld.strikeLightning(new Location(theWorld, blocks.getTargetBlock().X,
-                                                                        blocks.getTargetBlock().Y,
-                                                                        blocks.getTargetBlock().Z));
+                        theWorld.strikeLightning(blocks.getTargetBlock());
                     }
                 }
 
@@ -117,9 +111,10 @@ public class GlobalQuestPlugin extends JavaPlugin {
         isDebugEnabled = getConfiguration().getBoolean("GQP.IsDebugEnabled", false);
         playerNameToObserve = getConfiguration().getString("GQP.PlayerNameToObserve", "Sinister");
 
-        airbaseCoordinates.X = getConfiguration().getInt("GQP.AirBase.X", 0);
-        airbaseCoordinates.Y = getConfiguration().getInt("GQP.AirBase.Y", 0);
-        airbaseCoordinates.Z = getConfiguration().getInt("GQP.AirBase.Z", 0);
+        double airbaseCoordinatesX = getConfiguration().getDouble("GQP.AirBase.X", 0);
+        double airbaseCoordinatesY = getConfiguration().getDouble("GQP.AirBase.Y", 0);
+        double airbaseCoordinatesZ = getConfiguration().getDouble("GQP.AirBase.Z", 0);
+        airbaseCoordinates = new Location(theWorld, airbaseCoordinatesX, airbaseCoordinatesY, airbaseCoordinatesZ);
 
         int lightningBlocksCount = getConfiguration().getInt("GQP.AirBase.Lightning.BlocksCount", 1);
         lightningFrequency = getConfiguration().getInt("GQP.AirBase.Lightning.Frequency", 20);
@@ -127,15 +122,15 @@ public class GlobalQuestPlugin extends JavaPlugin {
         for (int index = 0; index < lightningBlocksCount; ++index) {
             LightningPairedBlocks blocks = new LightningPairedBlocks();
 
-            Coordinates targetCoordinates = new Coordinates();
-            targetCoordinates.X = getConfiguration().getInt("GQP.AirBase.Lightning.TargetBlock" + index + "X", 0);
-            targetCoordinates.Y = getConfiguration().getInt("GQP.AirBase.Lightning.TargetBlock" + index + "Y", 0);
-            targetCoordinates.Z = getConfiguration().getInt("GQP.AirBase.Lightning.TargetBlock" + index + "Z", 0);
+            double targetX = getConfiguration().getDouble("GQP.AirBase.Lightning.TargetBlock" + index + "X", 0);
+            double targetY = getConfiguration().getDouble("GQP.AirBase.Lightning.TargetBlock" + index + "Y", 0);
+            double targetZ = getConfiguration().getDouble("GQP.AirBase.Lightning.TargetBlock" + index + "Z", 0);
+            Location targetCoordinates = new Location(theWorld, targetX, targetY, targetZ);
 
-            Coordinates sourceCoordinates = new Coordinates();
-            sourceCoordinates.X = getConfiguration().getInt("GQP.AirBase.Lightning.SourceBlock" + index + "X", 0);
-            sourceCoordinates.Y = getConfiguration().getInt("GQP.AirBase.Lightning.SourceBlock" + index + "Y", 0);
-            sourceCoordinates.Z = getConfiguration().getInt("GQP.AirBase.Lightning.SourceBlock" + index + "Z", 0);
+            double sourceX = getConfiguration().getDouble("GQP.AirBase.Lightning.SourceBlock" + index + "X", 0);
+            double sourceY = getConfiguration().getDouble("GQP.AirBase.Lightning.SourceBlock" + index + "Y", 0);
+            double sourceZ = getConfiguration().getDouble("GQP.AirBase.Lightning.SourceBlock" + index + "Z", 0);
+            Location sourceCoordinates = new Location(theWorld, sourceX, sourceY, sourceZ);
 
             blocks.setTargetBlock(targetCoordinates);
             blocks.setSourceBlock(sourceCoordinates);

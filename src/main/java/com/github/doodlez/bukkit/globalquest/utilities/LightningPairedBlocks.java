@@ -6,31 +6,28 @@
 
 package com.github.doodlez.bukkit.globalquest.utilities;
 
+import org.bukkit.Location;
+
 /**
  * Represents lightning paired blocks — is source is not broken, target is hit by lightning.
  */
 public class LightningPairedBlocks {
-    private Coordinates sourceBlock;
-    private Coordinates targetBlock;
+    private Location sourceBlock;
+    private Location targetBlock;
 
-    public LightningPairedBlocks() {
-        sourceBlock = new Coordinates();
-        targetBlock = new Coordinates();
-    }
-
-    public Coordinates getSourceBlock() {
+    public Location getSourceBlock() {
         return sourceBlock;
     }
 
-    public void setSourceBlock(Coordinates sourceBlock) {
+    public void setSourceBlock(Location sourceBlock) {
         this.sourceBlock = sourceBlock;
     }
 
-    public Coordinates getTargetBlock() {
+    public Location getTargetBlock() {
         return targetBlock;
     }
 
-    public void setTargetBlock(Coordinates targetBlock) {
+    public void setTargetBlock(Location targetBlock) {
         this.targetBlock = targetBlock;
     }
 }
