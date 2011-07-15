@@ -97,7 +97,14 @@ public class SpecialPlayerListener extends PlayerListener {
         Player player = event.getPlayer();
         if (player.getName().equals("")) {
             if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
-                    || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+
+                if (GlobalQuestPlugin.isDebugEnabled) {
+                    System.out.print("Coordinates: " + player.getTargetBlock(null, 500).getX() + ", " +
+                                                       player.getTargetBlock(null, 500).getY() + ", " +
+                                                       player.getTargetBlock(null, 500).getZ());
+                }
+
                 if (player.getItemInHand().getTypeId() == 261) {
                     ItemStack inventory[] = player.getInventory().getContents();
                     for (ItemStack anInventory : inventory) {
@@ -126,7 +133,8 @@ public class SpecialPlayerListener extends PlayerListener {
     }
 
     /**
-     * Handles PLAYER_CHAT event. Allows only commands (i.e., messages, which start with '/').
+     * Handles PLAYER_CHAT event. Allows Isaak Breen only commands (i.e., messages, which start with '/').
+     * All other players can chat freely.
      * @param event PlayerChatEvent.
      */
     @Override
