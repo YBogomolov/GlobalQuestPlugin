@@ -47,6 +47,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
         manager.registerEvent(Type.PLAYER_QUIT, playerListener, Priority.Normal, this);
         manager.registerEvent(Type.PLAYER_INTERACT, playerListener, Priority.Highest, this);
         manager.registerEvent(Type.PLAYER_RESPAWN, playerListener, Priority.Normal, this);
+        manager.registerEvent(Type.PLAYER_CHAT, playerListener, Priority.High, this);
 
         // Block events:
         manager.registerEvent(Type.BLOCK_PLACE, blockListener, Priority.Normal, this);

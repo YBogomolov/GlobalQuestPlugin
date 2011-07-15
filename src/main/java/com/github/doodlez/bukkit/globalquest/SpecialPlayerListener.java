@@ -16,6 +16,8 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.Set;
+
 /**
  * Class that handles special mod-like player Isaak Breen, needed for Global Quest.
  */
@@ -120,6 +122,33 @@ public class SpecialPlayerListener extends PlayerListener {
         Player player = event.getPlayer();
         if (player.getName().equals("")) {
             GiveBowAndArrowsTo(player);
+        }
+    }
+
+    /**
+     * Handles PLAYER_CHAT event. Allows only commands (i.e., messages, which start with '/').
+     * @param event PlayerChatEvent.
+     */
+    @Override
+    public void onPlayerChat(PlayerChatEvent event) {
+        Player player = event.getPlayer();
+
+        Set<Player> recipients = event.getRecipients();
+
+        Player playerToRemove = null;
+        for (Player chatPlayer: recipients) {
+            if (chatPlayer.getName().equals("")) {
+                playerToRemove = chatPlayer;
+                break;
+            }
+        }
+        if (playerToRemove != null)
+            recipients.remove(playerToRemove);
+
+        if (player.getName().equals("")) {
+            if (event.getMessage().charAt(0) != '/') {
+                event.setCancelled(true);
+            }
         }
     }
 }
