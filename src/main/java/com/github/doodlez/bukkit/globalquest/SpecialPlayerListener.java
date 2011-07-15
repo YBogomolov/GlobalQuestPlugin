@@ -53,6 +53,10 @@ public class SpecialPlayerListener extends PlayerListener {
         }
     }
 
+    /**
+     * Gives specified player a bow and infinite stack of arrows.
+     * @param player Player with such great responsibility (e.g., Isaak Breen).
+     */
     private void GiveBowAndArrowsTo(Player player) {
         // He sould have infinite arrows and a bow to defend himself.
         System.out.print("Let's give him infinite arrows and a bow.");
@@ -88,7 +92,6 @@ public class SpecialPlayerListener extends PlayerListener {
 
     /**
      * Handles PLAYER_INTERACT event. Sets his arrows to infinite.
-     *
      * @param event Player interact event.
      */
     @SuppressWarnings({"deprecation"})

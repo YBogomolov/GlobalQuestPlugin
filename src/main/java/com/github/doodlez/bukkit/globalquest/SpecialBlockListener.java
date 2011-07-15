@@ -13,6 +13,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
+/**
+ * Class that handles Isaak Breen's actions against blocks — destruction, placement, etc.
+ */
 public class SpecialBlockListener extends BlockListener {
     /**
      * Handles BLOCK_PLACE event. Prohibits Isaak Breen to place blocks.
@@ -24,8 +27,8 @@ public class SpecialBlockListener extends BlockListener {
 
         System.out.print("Player \"" + player.getName() + "\" is placing a block.");
         if (player.getName().equals("")){
-            Location chunkCenterCoord = LocationHelper.GetChunkCenterLocation(event.getPlayer().getWorld(),
-                                                                              event.getBlockPlaced());
+            Location chunkCenterCoord = LocationHelper.GetSphereCenterLocation(event.getPlayer().getWorld(),
+                    event.getBlockPlaced());
             System.out.print("Chunk coord: " + chunkCenterCoord.getX() + ", " + chunkCenterCoord.getZ());
 
             if ((GlobalQuestPlugin.airbaseCoordinates.getX() != chunkCenterCoord.getX())
@@ -49,8 +52,8 @@ public class SpecialBlockListener extends BlockListener {
 
         System.out.print("Player \"" + player.getName() + "\" is breaking a block.");
         if (player.getName().equals("")) {
-            Location chunkCenterCoord = LocationHelper.GetChunkCenterLocation(event.getPlayer().getWorld(),
-                                                                              event.getBlock());
+            Location chunkCenterCoord = LocationHelper.GetSphereCenterLocation(event.getPlayer().getWorld(),
+                    event.getBlock());
 
             if ((GlobalQuestPlugin.airbaseCoordinates.getX() != chunkCenterCoord.getX())
                 && (GlobalQuestPlugin.airbaseCoordinates.getZ() != chunkCenterCoord.getZ())) {

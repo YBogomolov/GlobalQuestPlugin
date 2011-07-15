@@ -11,6 +11,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityListener;
 
+/**
+ * Class that handles Entity-to-Entity interactions and applies appropriate treats.
+ */
 public class SpecialEntityListener extends EntityListener {
     /**
      * Handles ENTITY_DAMAGE event. Sets appropriate damage to Isaak Breen.
