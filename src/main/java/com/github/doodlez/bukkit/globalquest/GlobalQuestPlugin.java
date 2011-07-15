@@ -73,24 +73,28 @@ public class GlobalQuestPlugin extends JavaPlugin {
         // Strikes lightning at target block if source block is not broken:
         Runnable task = new Runnable() {
             public void run() {
-                boolean previousHasStorm = theWorld.hasStorm();
-                boolean allBlocksDestroyed = true;
-                for (LightningPairedBlocks blocks: AirBase.lightningPairedBlocksList) {
-                    Block block = theWorld.getBlockAt(blocks.getSourceBlock());
-                    if (block.getTypeId() == AirBase.lightningSourceId) {
-                        allBlocksDestroyed = false;
-                        theWorld.setStorm(true);
-                        if (isDebugEnabled) {
-                            System.out.print("Lightning strike at " + blocks.getTargetBlock().getX() + ", " +
-                                                                      blocks.getTargetBlock().getY() + ", " +
-                                                                      blocks.getTargetBlock().getZ());
-                        }
-                        theWorld.strikeLightning(blocks.getTargetBlock());
-                    }
-                }
+                for (World world: getServer().getWorlds()) {
+                    boolean previousHasStorm = world.hasStorm();
+                    boolean allBlocksDestroyed = true;
+                    for (LightningPairedBlocks blocks: AirBase.lightningPairedBlocksList) {
+                        Block block = world.getBlockAt(blocks.getSourceBlock());
+                        if (block.getTypeId() == AirBase.lightningSourceId) {
+                            allBlocksDestroyed = false;
 
-                if (allBlocksDestroyed)
-                    theWorld.setStorm(previousHasStorm);
+                            world.setStorm(true);
+                            
+                            if (isDebugEnabled) {
+                                System.out.print("Lightning strike at " + blocks.getTargetBlock().getX() + ", " +
+                                                                          blocks.getTargetBlock().getY() + ", " +
+                                                                          blocks.getTargetBlock().getZ());
+                            }
+                            world.strikeLightning(blocks.getTargetBlock());
+                        }
+                    }
+
+                    if (allBlocksDestroyed)
+                        world.setStorm(previousHasStorm);
+                }
             }
         };
         this.getServer().getScheduler().scheduleSyncRepeatingTask(this, task, 0, AirBase.lightningFrequency);
