@@ -62,6 +62,8 @@ public class Coordinates {
         int centerChunkX = (chunk.getX() - (int)Math.floor(Math.IEEEremainder(chunk.getX(), GRID_SIZE)) << 4) + 8;
         int centerChunkZ = (chunk.getZ() - (int)Math.floor(Math.IEEEremainder(chunk.getZ(), GRID_SIZE)) << 4) + 8;
 
+        System.out.print("CenterChunk: " + centerChunkX + ", " + centerChunkZ);
+
         int centerX = baseWorldCoord.X + (centerChunkX - baseChunkX);
         int centerZ = baseWorldCoord.Z + (centerChunkZ - baseChunkZ);
 
