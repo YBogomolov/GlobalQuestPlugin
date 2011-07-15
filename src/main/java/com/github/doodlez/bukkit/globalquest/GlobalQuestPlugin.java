@@ -5,6 +5,7 @@
  */
 package com.github.doodlez.bukkit.globalquest;
 
+ import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
  import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -13,8 +14,8 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.ArrayList;
-import static org.bukkit.event.Event.Type;
+
+ import static org.bukkit.event.Event.Type;
 
 /**
  * Main plugin class.
@@ -29,10 +30,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
     // Public fields:
     public static boolean isDebugEnabled = false;
     public static String playerNameToObserve;
-    public static Location airbaseCoordinates;
-    public static ArrayList<LightningPairedBlocks> lightningPairedBlocksList = new ArrayList<LightningPairedBlocks>();
-    public static int lightningFrequency;
-    public static int lightningSourceId;
+    public static AirBase airBase;
 
     /**
      * Occurs when plugin is disabled (unloaded from Bukkit).
@@ -77,9 +75,9 @@ public class GlobalQuestPlugin extends JavaPlugin {
             public void run() {
                 boolean previousHasStorm = theWorld.hasStorm();
                 boolean allBlocksDestroyed = true;
-                for (LightningPairedBlocks blocks: lightningPairedBlocksList) {
+                for (LightningPairedBlocks blocks: AirBase.lightningPairedBlocksList) {
                     Block block = theWorld.getBlockAt(blocks.getSourceBlock());
-                    if (block.getTypeId() == lightningSourceId) {
+                    if (block.getTypeId() == AirBase.lightningSourceId) {
                         allBlocksDestroyed = false;
                         theWorld.setStorm(true);
                         if (isDebugEnabled) {
@@ -95,7 +93,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
                     theWorld.setStorm(previousHasStorm);
             }
         };
-        this.getServer().getScheduler().scheduleSyncRepeatingTask(this, task, 0, lightningFrequency);
+        this.getServer().getScheduler().scheduleSyncRepeatingTask(this, task, 0, AirBase.lightningFrequency);
 
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.print(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled.");
@@ -113,11 +111,12 @@ public class GlobalQuestPlugin extends JavaPlugin {
         double airbaseCoordinatesX = getConfiguration().getDouble("GQP.AirBase.X", 0);
         double airbaseCoordinatesY = getConfiguration().getDouble("GQP.AirBase.Y", 0);
         double airbaseCoordinatesZ = getConfiguration().getDouble("GQP.AirBase.Z", 0);
-        airbaseCoordinates = new Location(theWorld, airbaseCoordinatesX, airbaseCoordinatesY, airbaseCoordinatesZ);
+        AirBase.airbaseCenterCoordinates = new Location(theWorld, airbaseCoordinatesX, airbaseCoordinatesY, airbaseCoordinatesZ);
+        AirBase.airbaseRadius = getConfiguration().getInt("GQP.AirBase.Radius", 20);
 
         int lightningBlocksCount = getConfiguration().getInt("GQP.AirBase.Lightning.BlocksCount", 1);
-        lightningFrequency = getConfiguration().getInt("GQP.AirBase.Lightning.Frequency", 20);
-        lightningSourceId = getConfiguration().getInt("GQP.AirBase.Lightning.SourceId", 35);
+        AirBase.lightningFrequency = getConfiguration().getInt("GQP.AirBase.Lightning.Frequency", 20);
+        AirBase.lightningSourceId = getConfiguration().getInt("GQP.AirBase.Lightning.SourceId", 35);
         for (int index = 0; index < lightningBlocksCount; ++index) {
             LightningPairedBlocks blocks = new LightningPairedBlocks();
 
@@ -134,7 +133,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
             blocks.setTargetBlock(targetCoordinates);
             blocks.setSourceBlock(sourceCoordinates);
 
-            lightningPairedBlocksList.add(blocks);
+            AirBase.lightningPairedBlocksList.add(blocks);
         }
         
         getConfiguration().save();

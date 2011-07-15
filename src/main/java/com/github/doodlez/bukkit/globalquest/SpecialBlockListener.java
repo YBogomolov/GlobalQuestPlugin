@@ -6,8 +6,7 @@
 
 package com.github.doodlez.bukkit.globalquest;
 
-import com.github.doodlez.bukkit.globalquest.utilities.LocationHelper;
-import org.bukkit.Location;
+import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
@@ -27,23 +26,19 @@ public class SpecialBlockListener extends BlockListener {
 
         System.out.print("Player \"" + player.getName() + "\" is placing a block.");
         if (player.getName().equals("")){
-            Location chunkCenterCoord = LocationHelper.GetSphereCenterLocation(event.getPlayer().getWorld(),
-                    event.getBlockPlaced());
-            System.out.print("Chunk coord: " + chunkCenterCoord.getX() + ", " + chunkCenterCoord.getZ());
-
-            if ((GlobalQuestPlugin.airbaseCoordinates.getX() != chunkCenterCoord.getX())
-                && (GlobalQuestPlugin.airbaseCoordinates.getZ() != chunkCenterCoord.getZ())) {
-                event.setBuild(false);
+            if (AirBase.blockBelongsToAirbase(event.getBlockPlaced())) {
+                if (GlobalQuestPlugin.isDebugEnabled)
+                    System.out.print("He's on his base, thus allowed to build.");
+                event.setBuild(true);
             }
             else {
-                System.out.print("He's on his base, thus allowed to build.");
-                event.setBuild(true);
+                event.setBuild(false);
             }
         }
     }
 
     /**
-     * Handles BLOCK_BREAK event. Prohibites Isaak Breen to break blocks.
+     * Handles BLOCK_BREAK event. Prohibits Isaak Breen to break blocks.
      * @param event BlockBreakEvent.
      */
     @Override
@@ -52,16 +47,13 @@ public class SpecialBlockListener extends BlockListener {
 
         System.out.print("Player \"" + player.getName() + "\" is breaking a block.");
         if (player.getName().equals("")) {
-            Location chunkCenterCoord = LocationHelper.GetSphereCenterLocation(event.getPlayer().getWorld(),
-                    event.getBlock());
-
-            if ((GlobalQuestPlugin.airbaseCoordinates.getX() != chunkCenterCoord.getX())
-                && (GlobalQuestPlugin.airbaseCoordinates.getZ() != chunkCenterCoord.getZ())) {
-                event.setCancelled(true);
+            if (AirBase.blockBelongsToAirbase(event.getBlock())) {
+                if (GlobalQuestPlugin.isDebugEnabled)
+                    System.out.print("He's on his base, thus allowed to break.");
+                event.setCancelled(false);
             }
             else {
-                System.out.print("He's on his base, thus allowed to break.");
-                event.setCancelled(false);
+                event.setCancelled(true);
             }
         }
     }

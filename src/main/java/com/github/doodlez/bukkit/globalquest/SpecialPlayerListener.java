@@ -58,7 +58,7 @@ public class SpecialPlayerListener extends PlayerListener {
      * @param player Player with such great responsibility (e.g., Isaak Breen).
      */
     private void GiveBowAndArrowsTo(Player player) {
-        // He sould have infinite arrows and a bow to defend himself.
+        // He should have infinite arrows and a bow to defend himself.
         System.out.print("Let's give him infinite arrows and a bow.");
         PlayerInventory inventory = player.getInventory();
 

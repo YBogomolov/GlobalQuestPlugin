@@ -23,7 +23,7 @@ public class SpecialEntityListener extends EntityListener {
     public void onEntityDamage(EntityDamageEvent event) {
         // Only process when both damager and damagee are Entities.
         if (event instanceof EntityDamageByEntityEvent) {
-            // Let's set appropriae damage values for Isaak Breen if he attacks player
+            // Let's set appropriate damage values for Isaak Breen if he attacks player
             // or he is attacked by player.
             if (event.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) {
                 EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
@@ -36,18 +36,18 @@ public class SpecialEntityListener extends EntityListener {
                     int previousDamage = e.getDamage();
 
                     // Now we have options:
-                    // 0. If he is stupid and firing arrows at himself — make no damage:
+                    // 0. If he is stupid and firing arrows at himself — do regular damage:
                     if ((damager.getName().equals(damagee.getName())) && (damager.getName().equals(""))) {
-                        e.setDamage(0);
+                        e.setDamage(previousDamage);
                         return;
                     }
-                    // 1. If Isaak Breen is damager, he sould deal DOUBLE damage:
+                    // 1. If Isaak Breen is damager, he should deal DOUBLE damage:
                     if (damager.getName().equals("")) {
                         e.setDamage(previousDamage * 2);
                         return;
                     }
 
-                    // 2. If Isaak Breen is the damagee, hesould receive HALF of damage:
+                    // 2. If Isaak Breen is the damagee, he should receive HALF of damage:
                     if (damagee.getName().equals("")) {
                         e.setDamage(previousDamage / 2);
                         return;

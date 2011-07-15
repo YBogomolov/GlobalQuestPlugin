@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 /**
  * Class, which encapsulates helper methods for working with locations, chunks and spheres.
  */
+@Deprecated
 public class LocationHelper {
     /**
      * Determines coordinates of the sphere for given world and block.
