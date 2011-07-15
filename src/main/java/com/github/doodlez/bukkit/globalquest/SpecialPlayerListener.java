@@ -105,7 +105,7 @@ public class SpecialPlayerListener extends PlayerListener {
                                                        player.getTargetBlock(null, 500).getZ());
                 }
 
-                if (player.getItemInHand().getTypeId() == 261) {
+                if (player.getItemInHand().getType() == Material.BOW) {
                     ItemStack inventory[] = player.getInventory().getContents();
                     for (ItemStack anInventory : inventory) {
                         if (anInventory != null && anInventory.getTypeId() == 262) {
