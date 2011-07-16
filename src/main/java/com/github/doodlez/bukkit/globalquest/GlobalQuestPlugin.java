@@ -89,14 +89,14 @@ public class GlobalQuestPlugin extends JavaPlugin {
     private void readConfiguration() {
         getConfiguration().load();
 
-        isDebugEnabled = getConfiguration().getBoolean("GQP.IsDebugEnabled", false);
+        isDebugEnabled = getConfiguration().getBoolean("IsDebugEnabled", false);
         
-        playerNameToObserve = getConfiguration().getString("GQP.PlayerNameToObserve", "Sinister");
+        playerNameToObserve = getConfiguration().getString("PlayerNameToObserve", "Sinister");
 
         try {
-            int worldCount = getConfiguration().getInt("GQP.AirBase.WorldCount", 0);
+            int worldCount = getConfiguration().getInt("AirBase.WorldCount", 0);
             for (int worldIndex = 0; worldIndex < worldCount; ++worldIndex) {
-                String worldPrefix = "GQP.AirBase.World" + worldIndex;
+                String worldPrefix = "AirBase.World" + worldIndex;
                 String worldName = getConfiguration().getString(worldPrefix + ".Name");
                 
                 World world = getServer().getWorld(worldName);
