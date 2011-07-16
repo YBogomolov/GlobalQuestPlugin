@@ -10,38 +10,50 @@ import java.util.ArrayList;
  */
 public class AirBase {
     /**
+     * World name, to which this airbase belongs.
+     */
+    public String worldName;
+    
+    /**
      * Center coordinates of the airbase.
      */
-    public static Location airbaseCenterCoordinates;
+    public Location airbaseCenterCoordinates;
 
     /**
      * Radius of the airbase sphere.
      */
-    public static int airbaseRadius;
+    public int airbaseRadius;
 
     /**
      * List of special blocks, one of them controls lightning strikes on the other.
      */
-    public static ArrayList<LightningPairedBlocks> lightningPairedBlocksList = new ArrayList<LightningPairedBlocks>();
+    public ArrayList<LightningPairedBlocks> lightningPairedBlocksList = new ArrayList<LightningPairedBlocks>();
 
     /**
      * Frequency of lightning strikes in Minecraft time. 1 second IRL == 20 ticks in game.
      */
-    public static int lightningFrequency;
+    public int lightningFrequency;
 
     /**
      * Source block material for lightning-paired blocks.
      * @see LightningPairedBlocks
      */
-    public static int lightningSourceId;
+    public int lightningSourceId;
+
+    public AirBase(String worldName) {
+        this.worldName = worldName;
+        lightningPairedBlocksList = new ArrayList<LightningPairedBlocks>();
+    }
 
     /**
      * Determines if the block given belongs to the airbase.
      * @param block The block to check.
+     * @param theAirbase THe airbase to check block belonging upon.
      * @return True, if block belongs to airbase territory, and false otherwise.
      */
-    public static boolean blockBelongsToAirbase(Block block) {
-        return (Math.pow(block.getX() - airbaseCenterCoordinates.getX(), 2.0) +
-                Math.pow(block.getZ() - airbaseCenterCoordinates.getZ(), 2.0)) <= Math.pow(airbaseRadius, 2.0);
+    public static boolean blockBelongsToAirbase(Block block, AirBase theAirbase) {
+        return (Math.pow(block.getX() - theAirbase.airbaseCenterCoordinates.getX(), 2.0) +
+                Math.pow(block.getZ() - theAirbase.airbaseCenterCoordinates.getZ(), 2.0))
+                <= Math.pow(theAirbase.airbaseRadius, 2.0);
     }
 }

@@ -1,21 +1,23 @@
- /**
+/**
  * User: YBogomolov
  * Date: 13.07.11
  * Time: 1:05
  */
 package com.github.doodlez.bukkit.globalquest;
 
- import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
- import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
+import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
+import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
+import com.github.doodlez.bukkit.globalquest.utilities.LightningRunnable;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
- import static org.bukkit.event.Event.Type;
+import java.util.HashMap;
+
+import static org.bukkit.event.Event.Type;
 
 /**
  * Main plugin class.
@@ -25,12 +27,12 @@ public class GlobalQuestPlugin extends JavaPlugin {
     private final static SpecialPlayerListener playerListener = new SpecialPlayerListener();
     private final static SpecialBlockListener blockListener = new SpecialBlockListener();
     private final static SpecialEntityListener entityListener = new SpecialEntityListener();
-    private static World theWorld;
+    private static HashMap<World, LightningRunnable> lightningTasks = new HashMap<World, LightningRunnable>();
 
     // Public fields:
     public static boolean isDebugEnabled = false;
     public static String playerNameToObserve;
-    public static AirBase airBase;
+    public static HashMap<World, AirBase> airBases = new HashMap<World, AirBase>();
 
     /**
      * Occurs when plugin is disabled (unloaded from Bukkit).
@@ -46,13 +48,14 @@ public class GlobalQuestPlugin extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        System.out.print("World list:");
-        for (World world: getServer().getWorlds()){
-            System.out.print(world.getName());
-        }
-
-        theWorld = this.getServer().getWorld("world");
         readConfiguration();
+
+        if (isDebugEnabled) {
+            System.out.print("World list:");
+            for (World world: getServer().getWorlds()){
+                System.out.print(world.getName());
+            }
+        }
 
         PluginManager manager = getServer().getPluginManager();
 
@@ -71,33 +74,10 @@ public class GlobalQuestPlugin extends JavaPlugin {
         manager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
 
         // Strikes lightning at target block if source block is not broken:
-        Runnable task = new Runnable() {
-            public void run() {
-                for (World world: getServer().getWorlds()) {
-                    boolean previousHasStorm = world.hasStorm();
-                    boolean allBlocksDestroyed = true;
-                    for (LightningPairedBlocks blocks: AirBase.lightningPairedBlocksList) {
-                        Block block = world.getBlockAt(blocks.getSourceBlock());
-                        if (block.getTypeId() == AirBase.lightningSourceId) {
-                            allBlocksDestroyed = false;
-
-                            world.setStorm(true);
-                            
-                            if (isDebugEnabled) {
-                                System.out.print("Lightning strike at " + blocks.getTargetBlock().getX() + ", " +
-                                                                          blocks.getTargetBlock().getY() + ", " +
-                                                                          blocks.getTargetBlock().getZ());
-                            }
-                            world.strikeLightning(blocks.getTargetBlock());
-                        }
-                    }
-
-                    if (allBlocksDestroyed)
-                        world.setStorm(previousHasStorm);
-                }
-            }
-        };
-        this.getServer().getScheduler().scheduleSyncRepeatingTask(this, task, 0, AirBase.lightningFrequency);
+        for (World world: airBases.keySet()) {
+            AirBase airBase = airBases.get(world);
+            this.getServer().getScheduler().scheduleSyncRepeatingTask(this, lightningTasks.get(world), 0, airBase.lightningFrequency);
+        }
 
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.print(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled.");
@@ -110,36 +90,60 @@ public class GlobalQuestPlugin extends JavaPlugin {
         getConfiguration().load();
 
         isDebugEnabled = getConfiguration().getBoolean("GQP.IsDebugEnabled", false);
+        
         playerNameToObserve = getConfiguration().getString("GQP.PlayerNameToObserve", "Sinister");
 
-        double airbaseCoordinatesX = getConfiguration().getDouble("GQP.AirBase.X", 0);
-        double airbaseCoordinatesY = getConfiguration().getDouble("GQP.AirBase.Y", 0);
-        double airbaseCoordinatesZ = getConfiguration().getDouble("GQP.AirBase.Z", 0);
-        AirBase.airbaseCenterCoordinates = new Location(theWorld, airbaseCoordinatesX, airbaseCoordinatesY, airbaseCoordinatesZ);
-        AirBase.airbaseRadius = getConfiguration().getInt("GQP.AirBase.Radius", 20);
+        try {
+            int worldCount = getConfiguration().getInt("GQP.AirBase.WorldCount", 0);
+            for (int worldIndex = 0; worldIndex < worldCount; ++worldIndex) {
+                String worldPrefix = "GQP.AirBase.World" + worldIndex;
+                String worldName = getConfiguration().getString(worldPrefix + ".Name");
+                
+                World world = getServer().getWorld(worldName);
 
-        int lightningBlocksCount = getConfiguration().getInt("GQP.AirBase.Lightning.BlocksCount", 1);
-        AirBase.lightningFrequency = getConfiguration().getInt("GQP.AirBase.Lightning.Frequency", 20);
-        AirBase.lightningSourceId = getConfiguration().getInt("GQP.AirBase.Lightning.SourceId", 35);
-        for (int index = 0; index < lightningBlocksCount; ++index) {
-            LightningPairedBlocks blocks = new LightningPairedBlocks();
+                AirBase airBase = new AirBase(worldName);
 
-            double targetX = getConfiguration().getDouble("GQP.AirBase.Lightning.TargetBlock" + index + "X", 0);
-            double targetY = getConfiguration().getDouble("GQP.AirBase.Lightning.TargetBlock" + index + "Y", 0);
-            double targetZ = getConfiguration().getDouble("GQP.AirBase.Lightning.TargetBlock" + index + "Z", 0);
-            Location targetCoordinates = new Location(theWorld, targetX, targetY, targetZ);
+                airBase.lightningFrequency = getConfiguration().getInt(worldPrefix + ".LightningFrequency", 20);
 
-            double sourceX = getConfiguration().getDouble("GQP.AirBase.Lightning.SourceBlock" + index + "X", 0);
-            double sourceY = getConfiguration().getDouble("GQP.AirBase.Lightning.SourceBlock" + index + "Y", 0);
-            double sourceZ = getConfiguration().getDouble("GQP.AirBase.Lightning.SourceBlock" + index + "Z", 0);
-            Location sourceCoordinates = new Location(theWorld, sourceX, sourceY, sourceZ);
+                double airbaseCoordinatesX = getConfiguration().getDouble(worldPrefix + ".X", 0);
+                double airbaseCoordinatesY = getConfiguration().getDouble(worldPrefix + ".Y", 0);
+                double airbaseCoordinatesZ = getConfiguration().getDouble(worldPrefix + ".Z", 0);
+                airBase.airbaseCenterCoordinates = new Location(world, airbaseCoordinatesX, airbaseCoordinatesY, airbaseCoordinatesZ);
 
-            blocks.setTargetBlock(targetCoordinates);
-            blocks.setSourceBlock(sourceCoordinates);
+                airBase.airbaseRadius = getConfiguration().getInt(worldPrefix + ".Radius", 20);
 
-            AirBase.lightningPairedBlocksList.add(blocks);
+                airBase.lightningSourceId = getConfiguration().getInt(worldPrefix + ".Lightning.SourceId", 35);
+
+                int lightningBlocksCount  = getConfiguration().getInt(worldPrefix + ".Lightning.BlocksCount", 1);
+                for (int index = 0; index < lightningBlocksCount; ++index) {
+                    LightningPairedBlocks blocks = new LightningPairedBlocks();
+
+                    double targetX = getConfiguration().getDouble(worldPrefix + ".Lightning.TargetBlock" + index + ".X", 0);
+                    double targetY = getConfiguration().getDouble(worldPrefix + ".Lightning.TargetBlock" + index + ".Y", 0);
+                    double targetZ = getConfiguration().getDouble(worldPrefix + ".Lightning.TargetBlock" + index + ".Z", 0);
+                    Location targetCoordinates = new Location(world, targetX, targetY, targetZ);
+
+                    double sourceX = getConfiguration().getDouble(worldPrefix + ".Lightning.SourceBlock" + index + ".X", 0);
+                    double sourceY = getConfiguration().getDouble(worldPrefix + ".Lightning.SourceBlock" + index + ".Y", 0);
+                    double sourceZ = getConfiguration().getDouble(worldPrefix + ".Lightning.SourceBlock" + index + ".Z", 0);
+                    Location sourceCoordinates = new Location(world, sourceX, sourceY, sourceZ);
+
+                    blocks.setTargetBlock(targetCoordinates);
+                    blocks.setSourceBlock(sourceCoordinates);
+
+                    airBase.lightningPairedBlocksList.add(blocks);
+                }
+
+                airBases.put(world, airBase);
+
+                LightningRunnable task = new LightningRunnable(world);
+                lightningTasks.put(world, task);
+            }
         }
-        
+        catch (Exception e) {
+            System.out.print("Oops! Something happened: " + e.getMessage());
+        }
+
         getConfiguration().save();
     }
 }

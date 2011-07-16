@@ -26,7 +26,8 @@ public class SpecialBlockListener extends BlockListener {
 
         System.out.print("Player \"" + player.getName() + "\" is placing a block.");
         if (player.getName().equals("")){
-            if (AirBase.blockBelongsToAirbase(event.getBlockPlaced())) {
+            AirBase airBase = GlobalQuestPlugin.airBases.get(event.getBlockPlaced().getWorld());
+            if (AirBase.blockBelongsToAirbase(event.getBlockPlaced(), airBase)) {
                 if (GlobalQuestPlugin.isDebugEnabled)
                     System.out.print("He's on his base, thus allowed to build.");
                 event.setBuild(true);
@@ -47,7 +48,8 @@ public class SpecialBlockListener extends BlockListener {
 
         System.out.print("Player \"" + player.getName() + "\" is breaking a block.");
         if (player.getName().equals("")) {
-            if (AirBase.blockBelongsToAirbase(event.getBlock())) {
+            AirBase airBase = GlobalQuestPlugin.airBases.get(event.getBlock().getWorld());
+            if (AirBase.blockBelongsToAirbase(event.getBlock(), airBase)) {
                 if (GlobalQuestPlugin.isDebugEnabled)
                     System.out.print("He's on his base, thus allowed to break.");
                 event.setCancelled(false);
