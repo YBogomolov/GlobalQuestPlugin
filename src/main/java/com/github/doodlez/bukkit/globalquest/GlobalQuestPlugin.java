@@ -5,6 +5,7 @@
  */
 package com.github.doodlez.bukkit.globalquest;
 
+import com.github.doodlez.bukkit.globalquest.command.DefenceCommand;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningRunnable;
@@ -73,6 +74,9 @@ public class GlobalQuestPlugin extends JavaPlugin {
         // Entity events:
         manager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
 
+        // Commands:
+        getCommand("defence").setExecutor(new DefenceCommand());
+
         // Strikes lightning at target block if source block is not broken:
         for (World world: airBases.keySet()) {
             AirBase airBase = airBases.get(world);
@@ -110,7 +114,8 @@ public class GlobalQuestPlugin extends JavaPlugin {
                 double airbaseCoordinatesZ = getConfiguration().getDouble(worldPrefix + ".Z", 0);
                 airBase.airbaseCenterCoordinates = new Location(world, airbaseCoordinatesX, airbaseCoordinatesY, airbaseCoordinatesZ);
 
-                airBase.airbaseRadius = getConfiguration().getInt(worldPrefix + ".Radius", 20);
+                airBase.domeRadius = getConfiguration().getInt(worldPrefix + ".DomeRadius", 20);
+                airBase.domeThickness = getConfiguration().getDouble(worldPrefix + ".DomeThickness", 2);
 
                 airBase.lightningSourceId = getConfiguration().getInt(worldPrefix + ".Lightning.SourceId", 35);
 

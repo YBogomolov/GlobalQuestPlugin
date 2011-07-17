@@ -3,10 +3,11 @@
  * Date: 13.07.11
  * Time: 10:14
  */
-
 package com.github.doodlez.bukkit.globalquest;
 
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockListener;
@@ -24,7 +25,8 @@ public class SpecialBlockListener extends BlockListener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
 
-        System.out.print("Player \"" + player.getName() + "\" is placing a block.");
+        if (GlobalQuestPlugin.isDebugEnabled)
+            System.out.print("Player \"" + player.getName() + "\" is placing a block.");
         if (player.getName().equals("")){
             AirBase airBase = GlobalQuestPlugin.airBases.get(event.getBlockPlaced().getWorld());
             if (AirBase.blockBelongsToAirbase(event.getBlockPlaced(), airBase)) {
@@ -46,7 +48,8 @@ public class SpecialBlockListener extends BlockListener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
 
-        System.out.print("Player \"" + player.getName() + "\" is breaking a block.");
+        if (GlobalQuestPlugin.isDebugEnabled)
+            System.out.print("Player \"" + player.getName() + "\" is breaking a block.");
         if (player.getName().equals("")) {
             AirBase airBase = GlobalQuestPlugin.airBases.get(event.getBlock().getWorld());
             if (AirBase.blockBelongsToAirbase(event.getBlock(), airBase)) {
@@ -56,6 +59,27 @@ public class SpecialBlockListener extends BlockListener {
             }
             else {
                 event.setCancelled(true);
+            }
+        }
+        else {
+            // Need to check — if some player tries to break glass dome while Isaak offline.
+            boolean isaakOnline = false;
+            for (Player playerToTest: player.getWorld().getPlayers()) {
+                if (playerToTest.getName().equals("")) {
+                    isaakOnline = true;
+                    break;
+                }
+            }
+
+            if (!isaakOnline) {
+                Block block = event.getBlock();
+                AirBase airBase = GlobalQuestPlugin.airBases.get(player.getWorld());
+                if (block.getType().equals(Material.GLASS)) {
+                    if (AirBase.blockBelongsToDome(block.getX(), block.getY(), block.getZ(), airBase.domeRadius, airBase.domeThickness)) {
+                        // We shouldn't allow this!
+                        event.setCancelled(true);
+                    }
+                }
             }
         }
     }

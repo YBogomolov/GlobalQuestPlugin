@@ -8,3 +8,6 @@ commands:
   debug:
     description: Toggles your debugging status for this plugin.
     usage: /debug
+  defence:
+    description: Toggles glass over the airbase for Isaak Breen.
+    usage: /defence

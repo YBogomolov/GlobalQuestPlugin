@@ -5,6 +5,8 @@
  */
 package com.github.doodlez.bukkit.globalquest;
 
+import com.github.doodlez.bukkit.globalquest.command.DefenceCommand;
+import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import org.bukkit.Bukkit;
@@ -74,7 +76,7 @@ public class SpecialPlayerListener extends PlayerListener {
     /**
      * Handles PLAYER_QUIT event. Is players is special, then
      * disable his quit message in chat.
-     *
+     * Also puts on defence dome over all airbases.
      * @param event Player quit event.
      */
     @Override
@@ -82,6 +84,10 @@ public class SpecialPlayerListener extends PlayerListener {
         Player player = event.getPlayer();
 
         if (player.getName().equals("")) {
+            for (AirBase airBase: GlobalQuestPlugin.airBases.values()) {
+                if (!airBase.glassEnabled)
+                    DefenceCommand.toggleGlass(player, airBase);
+            }
             System.out.print(player.getName() + " left the game.");
             event.setQuitMessage(null);
 
