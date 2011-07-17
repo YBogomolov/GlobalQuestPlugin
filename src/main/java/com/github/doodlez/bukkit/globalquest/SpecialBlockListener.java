@@ -50,6 +50,7 @@ public class SpecialBlockListener extends BlockListener {
 
         if (GlobalQuestPlugin.isDebugEnabled)
             System.out.print("Player \"" + player.getName() + "\" is breaking a block.");
+
         if (player.getName().equals("")) {
             AirBase airBase = GlobalQuestPlugin.airBases.get(event.getBlock().getWorld());
             if (AirBase.blockBelongsToAirbase(event.getBlock(), airBase)) {
@@ -71,13 +72,19 @@ public class SpecialBlockListener extends BlockListener {
                 }
             }
 
+            if (GlobalQuestPlugin.isDebugEnabled)
+                System.out.print("Isaak Breen is online: " + isaakOnline);
+
             if (!isaakOnline) {
                 Block block = event.getBlock();
                 AirBase airBase = GlobalQuestPlugin.airBases.get(player.getWorld());
                 if (block.getType().equals(Material.GLASS)) {
-                    if (AirBase.blockBelongsToDome(block.getX(), block.getY(), block.getZ(), airBase.domeRadius, airBase.domeThickness)) {
+                    if (AirBase.blockBelongsToDome(block.getX(), block.getY(), block.getZ(), airBase.domeRadius, airBase.domeThickness) ||
+                        AirBase.blockBelongsToAirbase(block, airBase)) {
                         // We shouldn't allow this!
                         event.setCancelled(true);
+                        if (GlobalQuestPlugin.isDebugEnabled)
+                            System.out.print("You really shouldn't break this block while he's offline.");
                     }
                 }
             }

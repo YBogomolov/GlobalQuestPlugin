@@ -5,7 +5,6 @@
  */
 package com.github.doodlez.bukkit.globalquest;
 
-import com.github.doodlez.bukkit.globalquest.command.DefenceCommand;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet20NamedEntitySpawn;
@@ -85,8 +84,18 @@ public class SpecialPlayerListener extends PlayerListener {
 
         if (player.getName().equals("")) {
             for (AirBase airBase: GlobalQuestPlugin.airBases.values()) {
-                if (!airBase.glassEnabled)
-                    DefenceCommand.toggleGlass(player, airBase);
+                if (!airBase.domeEnabled) {
+                    if (GlobalQuestPlugin.isDebugEnabled)
+                        System.out.print("Warning! Dome was disabled. Enabling!");
+                    airBase.domeEnabled = true;
+                    AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, true);
+                }
+                else {
+                    if (GlobalQuestPlugin.isDebugEnabled)
+                        System.out.print("Warning! Dome is in glass mode. Enforcing!");
+                    AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, false); // Regular defence disabling...
+                    AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, true); // ...and re-enabling its with OBSIDIAN!
+                }
             }
             System.out.print(player.getName() + " left the game.");
             event.setQuitMessage(null);

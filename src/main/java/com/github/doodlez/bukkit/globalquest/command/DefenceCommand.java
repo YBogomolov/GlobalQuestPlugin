@@ -7,8 +7,6 @@ package com.github.doodlez.bukkit.globalquest.command;
 
 import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,66 +33,30 @@ public class DefenceCommand implements CommandExecutor {
                 if (airBase == null)
                     return false;
 
-                if (airBase.glassEnabled) {
+                if (airBase.domeEnabled) {
                     // Disable glass over the airbase:
-                    airBase.glassEnabled = false;
+                    airBase.domeEnabled = false;
 
                     commandSender.sendMessage("Glass disabled.");
+
+                    AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, false);
                 }
                 else {
                     // Enable glass over the airbase:
-                    airBase.glassEnabled = true;
+                    airBase.domeEnabled = true;
 
                     commandSender.sendMessage("Glass enabled.");
+
+                    boolean emergency = false;
+                    if (args.length != 0)
+                        emergency = args[0].equals("emergency");
+                    AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, emergency);
                 }
 
-                toggleGlass(player, airBase);
 
                 return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Toggles defencive glass dome on and off.
-     * @param player Player who issues command.
-     * @param airBase AirBase to toggle dome over.
-     */
-    public static void toggleGlass(Player player, AirBase airBase) {
-        Block airBaseCenterBlock = player.getWorld().getBlockAt(airBase.airbaseCenterCoordinates);
-
-        // Center coordinates — just shorter references.
-        int x0 = airBaseCenterBlock.getX();
-        int y0 = airBaseCenterBlock.getY();
-        int z0 = airBaseCenterBlock.getZ();
-
-        if (GlobalQuestPlugin.isDebugEnabled)
-            System.out.print("Building sphere: at (" + x0 + "," + y0 + "," + z0 + "), R = " + airBase.domeRadius);
-
-        for (int x = -airBase.domeRadius; x <= airBase.domeRadius; ++x) {
-            for (int y = -airBase.domeRadius; y <= airBase.domeRadius; ++y) {
-                for (int z = -airBase.domeRadius; z <= airBase.domeRadius; ++z) {
-                    int X = x + x0;
-                    int Y = y + y0;
-                    int Z = z + z0;
-                    if (AirBase.blockBelongsToDome(x, y, z, airBase.domeRadius, airBase.domeThickness)) {
-                        if (airBase.glassEnabled) {
-                            if (player.getWorld().getBlockAt(X, Y, Z ).getType() == Material.AIR) {
-                                player.getWorld().getBlockAt(X, Y, Z).setType(Material.GLASS);
-                            }
-                        }
-                        else {
-                            for (int dx = -1; dx <= 1; ++dx)
-                                for (int dy = -1; dy <= 1; ++dy)
-                                    for (int dz = -1; dz <= 1; ++dz)
-                                        if (player.getWorld().getBlockAt(X + dx, Y + dy, Z + dz).getType() == Material.GLASS) {
-                                            player.getWorld().getBlockAt(X + dx, Y + dy, Z + dz).setType(Material.AIR);
-                                        }
-                        }
-                    }
-                }
-            }
-        }
     }
 }
