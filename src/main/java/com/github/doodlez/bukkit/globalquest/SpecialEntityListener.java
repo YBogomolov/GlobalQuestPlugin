@@ -96,10 +96,6 @@ public class SpecialEntityListener extends EntityListener {
         }
     }
 
-    /**
-     * Handles EXPLOSION_PRIME event. Disables dynamite explosions on airbases.
-     * @param event ExplosionPrimeEvent.
-     */
     @Override
     public void onExplosionPrime(ExplosionPrimeEvent event) {
         if (event.getEntity() instanceof TNTPrimed) {
