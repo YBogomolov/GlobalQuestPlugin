@@ -1,0 +1,69 @@
+IsDebugEnabled: true # this allows to print some debug messages to System.out.
+PlayerNameToObserve: Sinister
+PlayerBaseDamage: 4     # Damage for Isaak Breen is calculated like this:
+PlayerDamageModifier: 0 # PlayerBaseDamage + PlayersOnline * PlayerDamageModifier
+PlayerInvincibleToHisArrows: true
+AirBase:
+    WorldCount: 2
+    World0:
+        Name: world # should equals to Bukkit world name (e.g. 'world', 'world_nether', 'biosphere', etc.)
+        LightningFrequency: 80  # 20 ticks == 1 sec.
+        X: -24 # Coordinates of
+        Y: 65  # airbase
+        Z: -9  # center.
+        DomeRadius: 40
+        DomeThickness: 2.0 # Double for possible dome thickness of 0.5 blocks.
+        Lightning:
+            SourceId: 35    # Material ID. 35 == wool.
+            BlocksCount: 1  # target blocks count.
+            TargetBlock0:
+                X: -28
+                Y: 78
+                Z: -16
+            SourceBlock0:
+                X: -24
+                Y: 65
+                Z: -4
+    World1:
+        Name: biosphere
+        LightningFrequency: 20
+        X: 8
+        Y: 49
+        Z: 8
+        DomeRadius: 40
+        DomeThickness: 2.0
+        Lightning:
+            SourceId: 35
+            BlocksCount: 4
+            TargetBlock0:
+                X: 20
+                Y: 48
+                Z: 3
+            SourceBlock0:
+                X: 9
+                Y: 47
+                Z: 2
+            TargetBlock1:
+                X: 20
+                Y: 48
+                Z: 5
+            SourceBlock1:
+                X: 9
+                Y: 47
+                Z: 2
+            TargetBlock2:
+                X: 20
+                Y: 48
+                Z: 7
+            SourceBlock2:
+                X: 9
+                Y: 47
+                Z: 2
+            TargetBlock3:
+                X: 20
+                Y: 48
+                Z: 9
+            SourceBlock3:
+                X: 9
+                Y: 47
+                Z: 2
