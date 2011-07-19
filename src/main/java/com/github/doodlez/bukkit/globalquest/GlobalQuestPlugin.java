@@ -33,6 +33,9 @@ public class GlobalQuestPlugin extends JavaPlugin {
     // Public fields:
     public static boolean isDebugEnabled = false;
     public static String playerNameToObserve;
+    public static int playerBaseDamage;
+    public static int playerDamageModifier;
+    public static boolean playerInvincibleToHisArrows;
     public static HashMap<World, AirBase> airBases = new HashMap<World, AirBase>();
 
     /**
@@ -73,6 +76,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
 
         // Entity events:
         manager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
+        manager.registerEvent(Type.EXPLOSION_PRIME, entityListener, Priority.Normal, this);
 
         // Commands:
         getCommand("defence").setExecutor(new DefenceCommand());
@@ -96,6 +100,9 @@ public class GlobalQuestPlugin extends JavaPlugin {
         isDebugEnabled = getConfiguration().getBoolean("IsDebugEnabled", false);
         
         playerNameToObserve = getConfiguration().getString("PlayerNameToObserve", "Sinister");
+        playerBaseDamage = getConfiguration().getInt("PlayerBaseDamage", 0);
+        playerDamageModifier = getConfiguration().getInt("PlayerDamageModifier", 0);
+        playerInvincibleToHisArrows = getConfiguration().getBoolean("PlayerInvincibleToHisArrows", false);
 
         try {
             int worldCount = getConfiguration().getInt("AirBase.WorldCount", 0);

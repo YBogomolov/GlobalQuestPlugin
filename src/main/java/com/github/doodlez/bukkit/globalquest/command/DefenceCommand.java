@@ -37,7 +37,7 @@ public class DefenceCommand implements CommandExecutor {
                     // Disable glass over the airbase:
                     airBase.domeEnabled = false;
 
-                    commandSender.sendMessage("Glass disabled.");
+                    commandSender.sendMessage("Dome disabled.");
 
                     AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, false);
                 }
@@ -45,15 +45,17 @@ public class DefenceCommand implements CommandExecutor {
                     // Enable glass over the airbase:
                     airBase.domeEnabled = true;
 
-                    commandSender.sendMessage("Glass enabled.");
-
                     boolean emergency = false;
                     if (args.length != 0)
                         emergency = args[0].equals("emergency");
+
+                    if (emergency)
+                        commandSender.sendMessage("Dome enabled in emergency mode.");
+                    else
+                        commandSender.sendMessage("Dome enabled.");
+
                     AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, emergency);
                 }
-
-
                 return true;
             }
         }

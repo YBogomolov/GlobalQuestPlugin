@@ -168,6 +168,7 @@ public class SpecialPlayerListener extends PlayerListener {
                 break;
             }
         }
+        
         if (playerToRemove != null)
             recipients.remove(playerToRemove);
 
