@@ -1,5 +1,5 @@
 IsDebugEnabled: true # this allows to print some debug messages to System.out.
-PlayerNameToObserve: Sinister
+PlayerNameToObserve: IsaakBreen # replace by actual player name.
 PlayerBaseDamage: 4     # Damage for Isaak Breen is calculated like this:
 PlayerDamageModifier: 0 # PlayerBaseDamage + PlayersOnline * PlayerDamageModifier
 PlayerInvincibleToHisArrows: true
