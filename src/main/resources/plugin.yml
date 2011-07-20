@@ -8,6 +8,6 @@ commands:
   debug:
     description: Toggles your debugging status for this plugin.
     usage: /debug
-  defence:
+  dome:
     description: Toggles glass over the airbase for Isaak Breen.
-    usage: /defence
+    usage: "Usage: '/dome' to toggle defence dome, or '/dome emergency' to enable obsidian dome."

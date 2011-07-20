@@ -5,7 +5,7 @@
  */
 package com.github.doodlez.bukkit.globalquest;
 
-import com.github.doodlez.bukkit.globalquest.command.DefenceCommand;
+import com.github.doodlez.bukkit.globalquest.command.DomeCommand;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningRunnable;
@@ -79,7 +79,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
         manager.registerEvent(Type.EXPLOSION_PRIME, entityListener, Priority.Normal, this);
 
         // Commands:
-        getCommand("defence").setExecutor(new DefenceCommand());
+        getCommand("dome").setExecutor(new DomeCommand());
 
         // Strikes lightning at target block if source block is not broken:
         for (World world: airBases.keySet()) {

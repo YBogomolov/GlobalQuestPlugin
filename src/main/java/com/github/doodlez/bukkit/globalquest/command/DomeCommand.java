@@ -13,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Class which handles user command '/defence'.
+ * Class which handles user command '/dome'.
  */
-public class DefenceCommand implements CommandExecutor {
+public class DomeCommand implements CommandExecutor {
     /**
      * Handles user command event.
      * @param commandSender Sender of the commands (most of the time — player).
@@ -33,7 +33,12 @@ public class DefenceCommand implements CommandExecutor {
                 if (airBase == null)
                     return false;
 
-                if (airBase.domeEnabled) {
+
+                boolean emergency = false;
+                if (args.length != 0)
+                    emergency = args[0].equals("emergency");
+
+                if (airBase.domeEnabled && !emergency) {
                     // Disable glass over the airbase:
                     airBase.domeEnabled = false;
 
@@ -44,10 +49,6 @@ public class DefenceCommand implements CommandExecutor {
                 else {
                     // Enable glass over the airbase:
                     airBase.domeEnabled = true;
-
-                    boolean emergency = false;
-                    if (args.length != 0)
-                        emergency = args[0].equals("emergency");
 
                     if (emergency)
                         commandSender.sendMessage("Dome enabled in emergency mode.");

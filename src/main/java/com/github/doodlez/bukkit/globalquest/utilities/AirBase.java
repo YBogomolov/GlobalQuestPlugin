@@ -111,22 +111,19 @@ public class AirBase {
                     int Z = z + z0;
                     if (AirBase.blockBelongsToDome(x, y, z, airBase.domeRadius, airBase.domeThickness)) {
                         if (airBase.domeEnabled) {
-                            if (world.getBlockAt(X, Y, Z).getType() == Material.AIR) {
+                            if (world.getBlockAt(X, Y, Z).getType() == Material.AIR)
                                 world.getBlockAt(X, Y, Z).setType(domeMaterial);
-                            }
 
-                            if (world.getBlockAt(X, Y, Z).getType() == Material.GLASS && emergencyCase) {
+                            if (world.getBlockAt(X, Y, Z).getType() == Material.GLASS && emergencyCase)
                                 world.getBlockAt(X, Y, Z).setType(domeMaterial);
-                            }
                         }
                         else {
                             for (int dx = -1; dx <= 1; ++dx)
                                 for (int dy = -1; dy <= 1; ++dy)
                                     for (int dz = -1; dz <= 1; ++dz)
                                         if ((world.getBlockAt(X + dx, Y + dy, Z + dz).getType() == Material.GLASS)
-                                            || (world.getBlockAt(X + dx, Y + dy, Z + dz).getType() == Material.OBSIDIAN)) {
+                                            || (world.getBlockAt(X + dx, Y + dy, Z + dz).getType() == Material.OBSIDIAN))
                                             world.getBlockAt(X + dx, Y + dy, Z + dz).setType(Material.AIR);
-                                        }
                         }
                     }
                 }
