@@ -8,6 +8,7 @@ package com.github.doodlez.bukkit.globalquest;
 
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -37,7 +38,7 @@ public class SpecialEntityListener extends EntityListener {
                     Player damager = (Player)e.getDamager();
                     Player damagee = (Player)e.getEntity();
 
-                    int damage = e.getDamage();
+                    final int damage = e.getDamage();
                     int playersOnline = damager.getServer().getOnlinePlayers().length - 1; // Isaak himself doesn't count.
 
                     // Now we have options:
@@ -49,25 +50,103 @@ public class SpecialEntityListener extends EntityListener {
                             e.setDamage(damage);
                         return;
                     }
+
                     // 1. If Isaak Breen is damager, he should deal DOUBLE damage:
                     if (damager.getName().equals("")) {
                         // Let's make damage dynamical, depending on number of players online:
-                        int actualDamage = GlobalQuestPlugin.playerBaseDamage + playersOnline * GlobalQuestPlugin.playerDamageModifier;
-                        actualDamage *= 2;
+                        Material weapon = damager.getItemInHand().getType();
 
+                        double damageModifier = 1.0;
+
+                        switch (weapon) {
+                            case BOW: {
+                                switch (playersOnline) {
+                                    case 0:
+                                    case 1:
+                                        damageModifier = 1.10;
+                                        break;
+                                    case 2:
+                                        damageModifier = 1.2;
+                                        break;
+                                    case 3:
+                                        damageModifier = 1.3;
+                                        break;
+                                    case 4:
+                                        damageModifier = 1.4;
+                                        break;
+                                    default:
+                                        damageModifier = 1.5;
+                                        break;
+                                }
+                                break;
+                            }
+                            case DIAMOND_SWORD:
+                            case IRON_SWORD:
+                            case GOLD_SWORD:
+                            case STONE_SWORD:
+                            case WOOD_SWORD: {
+                                switch (playersOnline) {
+                                    case 0:
+                                    case 1:
+                                        damageModifier = 2.0;
+                                        break;
+                                    case 2:
+                                        damageModifier = 2.25;
+                                        break;
+                                    case 3:
+                                        damageModifier = 2.4;
+                                        break;
+                                    case 4:
+                                        damageModifier = 2.5;
+                                        break;
+                                    case 5:
+                                        damageModifier = 2.6;
+                                        break;
+                                    default:
+                                        damageModifier = 2.75;
+                                        break;
+                                }
+                                break;
+                            }
+                        }
+
+                        int actualDamage = (int)(damage * damageModifier);
                         e.setDamage(actualDamage);
+
+                        if (GlobalQuestPlugin.isDebugEnabled) {
+                            System.out.print("Base damage: " + damage + ", damage modifier: " + damageModifier + ", actual damage: " + actualDamage);
+                        }
+
                         return;
                     }
 
                     // 2. If Isaak Breen is the damagee, he should receive half or third part of the damage:
                     if (damagee.getName().equals("")) {
-                        int damageModifier = 2;
-                        if (playersOnline >= 2)
-                            damageModifier = 3;
-                        if (playersOnline >= 4)
-                            damageModifier = 4;
-                        damage /= damageModifier;
-                        e.setDamage(damage);
+                        double defenceModifier = 1.5;
+                        switch (playersOnline) {
+                            case 1:
+                                defenceModifier *= 1.0;
+                                break;
+                            case 2:
+                                defenceModifier = 1.75;
+                                break;
+                            case 3:
+                                defenceModifier = 1.85;
+                                break;
+                            case 4:
+                                defenceModifier = 1.9;
+                                break;
+                            default: // 5 and more:
+                                defenceModifier = 2.0;
+                                break;
+                        }
+                        int actualDamage = (int)(damage / defenceModifier);
+                        e.setDamage(actualDamage);
+
+                        if (GlobalQuestPlugin.isDebugEnabled) {
+                            System.out.print("Base damage: " + damage + ", defence modifier: " + defenceModifier + ", actual damage: " + actualDamage);
+                        }
+
                         return;
                     }
                 }

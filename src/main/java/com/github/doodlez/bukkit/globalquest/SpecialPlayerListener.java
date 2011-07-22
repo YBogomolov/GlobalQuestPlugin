@@ -50,7 +50,7 @@ public class SpecialPlayerListener extends PlayerListener {
                 }
             }
 
-            GiveBowAndArrowsTo(player);
+            GiveDefaultInventoryTo(player);
         }
     }
 
@@ -58,18 +58,22 @@ public class SpecialPlayerListener extends PlayerListener {
      * Gives specified player a bow and infinite stack of arrows.
      * @param player Player with such great responsibility (e.g., Isaak Breen).
      */
-    private void GiveBowAndArrowsTo(Player player) {
+    private void GiveDefaultInventoryTo(Player player) {
         // He should have infinite arrows and a bow to defend himself.
         System.out.print("Let's give him infinite arrows and a bow.");
         PlayerInventory inventory = player.getInventory();
 
         inventory.remove(Material.ARROW);
         inventory.remove(Material.BOW);
+        inventory.remove(Material.DIAMOND_SWORD);
 
         ItemStack arrowStack = new ItemStack(Material.ARROW, 64);
         ItemStack bowStack = new ItemStack(Material.BOW, 1);
+        ItemStack swordStack = new ItemStack(Material.DIAMOND_SWORD, 1);
+        
         inventory.addItem(bowStack);
         inventory.addItem(arrowStack);
+        inventory.addItem(swordStack);
     }
 
     /**
@@ -146,7 +150,7 @@ public class SpecialPlayerListener extends PlayerListener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         if (player.getName().equals("")) {
-            GiveBowAndArrowsTo(player);
+            GiveDefaultInventoryTo(player);
         }
     }
 
