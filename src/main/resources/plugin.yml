@@ -10,4 +10,3 @@ commands:
     usage: /debug
   dome:
     description: Toggles glass over the airbase for Isaak Breen.
-    usage: "Usage: '/dome' to toggle defence dome, or '/dome emergency' to enable obsidian dome."
