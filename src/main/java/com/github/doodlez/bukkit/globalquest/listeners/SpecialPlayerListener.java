@@ -7,8 +7,8 @@ package com.github.doodlez.bukkit.globalquest.listeners;
 
 import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.Packet20NamedEntitySpawn;
+import com.github.doodlez.bukkit.globalquest.utilities.Diary;
+import net.minecraft.server.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -18,6 +18,8 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -61,7 +63,7 @@ public class SpecialPlayerListener extends PlayerListener {
      */
     private void GiveDefaultInventoryTo(Player player) {
         // He should have infinite arrows and a bow to defend himself.
-        System.out.print("Let's give him infinite arrows and a bow.");
+        System.out.print("Let's give him infinite arrows, a bow and a diamond sword.");
         PlayerInventory inventory = player.getInventory();
 
         inventory.remove(Material.ARROW);
@@ -71,10 +73,17 @@ public class SpecialPlayerListener extends PlayerListener {
         ItemStack arrowStack = new ItemStack(Material.ARROW, 64);
         ItemStack bowStack = new ItemStack(Material.BOW, 1);
         ItemStack swordStack = new ItemStack(Material.DIAMOND_SWORD, 1);
-        
+
+        ItemStack paper1 = new ItemStack(Material.PAPER, 1);
+        paper1.setDurability((short)1);
+        ItemStack paper2 = new ItemStack(Material.PAPER, 1);
+        paper2.setDurability((short)2);
+
         inventory.addItem(bowStack);
         inventory.addItem(arrowStack);
         inventory.addItem(swordStack);
+        inventory.addItem(paper1);
+        inventory.addItem(paper2);
     }
 
     /**
@@ -118,6 +127,8 @@ public class SpecialPlayerListener extends PlayerListener {
     @Override
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+
+        // If this is Isaak Breen:
         if (player.getName().equals("")) {
             if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
                 || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
@@ -140,6 +151,55 @@ public class SpecialPlayerListener extends PlayerListener {
                     }
                 }
             }
+        }
+        else {
+            // This means we have general player.
+            if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
+                || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+
+                ItemStack itemInHand = player.getItemInHand();
+
+                if (itemInHand.getType() == Material.PAPER) {
+                    int diaryNumber = itemInHand.getDurability();
+
+                    Diary diary = GlobalQuestPlugin.diaries.get(diaryNumber);
+
+                    player.sendMessage(diary.text);
+                    for (String recipeName : diary.unblockedRecipes) {
+                        player.sendMessage(recipeName + " was unlocked.");
+                        UnlockRecipe(recipeName);
+                    }
+                    diary.unblockedRecipes.clear();
+                }
+            }
+        }
+    }
+
+    /**
+     * Unlocks recipe with given name.
+     * @param recipeName Recipe name to unlock.
+     */
+    private void UnlockRecipe(String recipeName) {
+        CraftingManager craftingManager = CraftingManager.getInstance();
+        
+        List<CraftingRecipe> craftList = craftingManager.b();
+        List<CraftingRecipe> editedList = new ArrayList<CraftingRecipe>();
+
+        editedList.addAll(craftList);
+
+        CraftingRecipe recipe = GlobalQuestPlugin.backupRecipes.get(recipeName);
+
+        if (!editedList.contains(recipe)) {
+            System.out.print("Adding " + recipeName + " to allowed recipes.");
+            editedList.add(recipe);
+            GlobalQuestPlugin.blockedRecipes.remove(recipeName);
+        }
+
+        try {
+            Diary.setPrivateValue(CraftingManager.class, craftingManager, "b", editedList);
+        }
+        catch (NoSuchFieldException e) {
+            e.printStackTrace();
         }
     }
 

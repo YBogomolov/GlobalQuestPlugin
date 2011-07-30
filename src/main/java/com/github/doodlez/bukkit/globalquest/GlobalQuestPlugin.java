@@ -6,23 +6,30 @@
 package com.github.doodlez.bukkit.globalquest;
 
 import com.github.doodlez.bukkit.globalquest.command.DomeCommand;
+import com.github.doodlez.bukkit.globalquest.command.GiveDiaryCommand;
 import com.github.doodlez.bukkit.globalquest.listeners.SpecialBlockListener;
 import com.github.doodlez.bukkit.globalquest.listeners.SpecialEntityListener;
 import com.github.doodlez.bukkit.globalquest.listeners.SpecialPlayerListener;
 import com.github.doodlez.bukkit.globalquest.listeners.SpecialServerListener;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
+import com.github.doodlez.bukkit.globalquest.utilities.Diary;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningRunnable;
+import net.minecraft.server.CraftingRecipe;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.ConfigurationNode;
+import sun.security.krb5.Config;
 
+import javax.xml.transform.sax.SAXTransformerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.bukkit.event.Event.Type;
 
@@ -44,7 +51,10 @@ public class GlobalQuestPlugin extends JavaPlugin {
     public static int playerDamageModifier;
     public static boolean playerInvincibleToHisArrows;
     public static HashMap<World, AirBase> airBases = new HashMap<World, AirBase>();
+
     public static ArrayList<String> blockedRecipes = new ArrayList<String>();
+    public static HashMap<String, CraftingRecipe> backupRecipes = new HashMap<String, CraftingRecipe>();
+    public static HashMap<Integer, Diary> diaries = new HashMap<Integer, Diary>();
 
     /**
      * Occurs when plugin is disabled (unloaded from Bukkit).
@@ -53,6 +63,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
     public void onDisable() {
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.print(pdfFile.getName() + " version " + pdfFile.getVersion() + " is disabled.");
+        saveConfiguration();
     }
 
     /**
@@ -91,6 +102,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
 
         // Commands:
         getCommand("dome").setExecutor(new DomeCommand());
+        getCommand("givediary").setExecutor(new GiveDiaryCommand());
 
         // Strikes lightning at target block if source block is not broken:
         for (World world: airBases.keySet()) {
@@ -114,6 +126,20 @@ public class GlobalQuestPlugin extends JavaPlugin {
 
         for (Object recipe : blockedRecipes) {
             GlobalQuestPlugin.blockedRecipes.add(recipe.toString());
+        }
+
+        int diaryCount = getConfiguration().getInt("Diaries.Count", 0);
+
+        for (int index = 0; index < diaryCount; ++index) {
+            Diary diary = new Diary();
+            diary.text = getConfiguration().getString("Diaries.Diary" + diary.number + ".Text");
+            List<Object> recipes = getConfiguration().getList("Diaries.Diary" + diary.number + ".UnblockedRecipes");
+            if (recipes != null)
+                for (Object recipe : recipes) {
+                    if (recipe != null)
+                        diary.unblockedRecipes.add(recipe.toString());
+                }
+            diaries.put(diary.number, diary);
         }
         
         playerNameToObserve = getConfiguration().getString("PlayerNameToObserve", "Sinister");
@@ -171,6 +197,69 @@ public class GlobalQuestPlugin extends JavaPlugin {
         }
         catch (Exception e) {
             System.out.print("Oops! Something happened: " + e.getMessage());
+        }
+
+        getConfiguration().save();
+    }
+
+    /**
+     * Saves configuration in order to save game progress.
+     */
+    private void saveConfiguration() {
+        getConfiguration().load();
+        
+        getConfiguration().setProperty("IsDebugEnabled", GlobalQuestPlugin.isDebugEnabled);
+
+        getConfiguration().setProperty("BlockedRecipes", blockedRecipes);
+
+        getConfiguration().setProperty("Diaries.Count", Diary.totalCount);
+
+        for (int index = 0; index < Diary.totalCount; ++index) {
+            Diary diary = diaries.get(index + 1);
+            String prefix = "Diaries.Diary" + (index+1);
+            getConfiguration().setProperty(prefix + ".Text", diary.text);
+            getConfiguration().setProperty(prefix + ".UnblockedRecipes", diary.unblockedRecipes);
+        }
+
+        getConfiguration().setProperty("PlayerNameToObserve", playerNameToObserve);
+        getConfiguration().setProperty("PlayerBaseDamage", playerBaseDamage);
+        getConfiguration().setProperty("PlayerDamageModifier", playerDamageModifier);
+        getConfiguration().setProperty("PlayerInvincibleToHisArrows", playerInvincibleToHisArrows);
+
+        getConfiguration().setProperty("AirBase.WorldCount", airBases.size());
+
+        int worldIndex = 0;
+        for (AirBase airBase : airBases.values()) {
+            String prefix = "AirBase.World" + worldIndex;
+            getConfiguration().setProperty(prefix + ".Name", airBase.worldName);
+            getConfiguration().setProperty(prefix + ".LightningFrequency", airBase.lightningFrequency);
+            getConfiguration().setProperty(prefix + ".X", airBase.airbaseCenterCoordinates.getX());
+            getConfiguration().setProperty(prefix + ".Y", airBase.airbaseCenterCoordinates.getY());
+            getConfiguration().setProperty(prefix + ".Z", airBase.airbaseCenterCoordinates.getZ());
+            getConfiguration().setProperty(prefix + ".DomeRadius", airBase.domeRadius);
+            getConfiguration().setProperty(prefix + ".DomeThickness", airBase.domeThickness);
+            getConfiguration().setProperty(prefix + ".Lightning.SourceId", airBase.lightningSourceId);
+            getConfiguration().setProperty(prefix + ".Lightning.BlocksCount", airBase.lightningPairedBlocksList.size());
+
+            prefix = prefix + ".Lightning";
+
+            int blockId = 0;
+            for (LightningPairedBlocks blocks : airBase.lightningPairedBlocksList) {
+                String srcPrefix = prefix + ".SourceBlock" + blockId;
+                String trgPrefix = prefix + ".TargetBlock" + blockId;
+
+                getConfiguration().setProperty(srcPrefix + ".X", blocks.getSourceBlock().getX());
+                getConfiguration().setProperty(srcPrefix + ".Y", blocks.getSourceBlock().getY());
+                getConfiguration().setProperty(srcPrefix + ".Z", blocks.getSourceBlock().getZ());
+
+                getConfiguration().setProperty(trgPrefix + ".X", blocks.getTargetBlock().getX());
+                getConfiguration().setProperty(trgPrefix + ".Y", blocks.getTargetBlock().getY());
+                getConfiguration().setProperty(trgPrefix + ".Z", blocks.getTargetBlock().getZ());
+
+                blockId++;
+            }
+
+            worldIndex++;
         }
 
         getConfiguration().save();

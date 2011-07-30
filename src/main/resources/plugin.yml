@@ -5,3 +5,6 @@ commands:
   dome:
     description: Toggles glass over the airbase for Isaak Breen.
     usage: /dome
+  givediary:
+    description: Gives Isaak's diary number X.
+    usage: /diary
