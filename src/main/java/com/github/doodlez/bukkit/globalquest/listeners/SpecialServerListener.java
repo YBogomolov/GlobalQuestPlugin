@@ -36,15 +36,17 @@ public class SpecialServerListener extends ServerListener {
                     ShapedRecipes shapedRecipe = (ShapedRecipes)recipe;
                     ItemStack recipeResult = shapedRecipe.b();
                     String resultName = recipeResult.getItem().j();
-                    
+
+                    boolean addItem = true;
                     for (String blockedItem : GlobalQuestPlugin.blockedRecipes) {
                         if (resultName.equals(blockedItem)) {
                             System.out.print(resultName + " is blocked!");
-                        }
-                        else {
-                            editedList.add(recipe);
+                            addItem = false;
+                            break;
                         }
                     }
+                    if (addItem)
+                        editedList.add(recipe);
                 }
             }
 
