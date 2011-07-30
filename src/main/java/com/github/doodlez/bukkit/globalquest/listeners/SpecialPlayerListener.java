@@ -3,8 +3,9 @@
  * Date: 13.07.11
  * Time: 1:27
  */
-package com.github.doodlez.bukkit.globalquest;
+package com.github.doodlez.bukkit.globalquest.listeners;
 
+import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.Packet20NamedEntitySpawn;

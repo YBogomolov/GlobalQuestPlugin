@@ -4,8 +4,9 @@
  * Time: 13:17
  */
 
-package com.github.doodlez.bukkit.globalquest;
+package com.github.doodlez.bukkit.globalquest.listeners;
 
+import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import org.bukkit.Location;
 import org.bukkit.Material;

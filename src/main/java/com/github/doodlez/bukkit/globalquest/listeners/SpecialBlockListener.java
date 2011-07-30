@@ -3,8 +3,9 @@
  * Date: 13.07.11
  * Time: 10:14
  */
-package com.github.doodlez.bukkit.globalquest;
+package com.github.doodlez.bukkit.globalquest.listeners;
 
+import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

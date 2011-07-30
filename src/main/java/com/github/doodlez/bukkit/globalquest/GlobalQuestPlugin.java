@@ -6,6 +6,10 @@
 package com.github.doodlez.bukkit.globalquest;
 
 import com.github.doodlez.bukkit.globalquest.command.DomeCommand;
+import com.github.doodlez.bukkit.globalquest.listeners.SpecialBlockListener;
+import com.github.doodlez.bukkit.globalquest.listeners.SpecialEntityListener;
+import com.github.doodlez.bukkit.globalquest.listeners.SpecialPlayerListener;
+import com.github.doodlez.bukkit.globalquest.listeners.SpecialServerListener;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
 import com.github.doodlez.bukkit.globalquest.utilities.LightningRunnable;
@@ -16,7 +20,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.bukkit.event.Event.Type;
 
@@ -28,6 +34,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
     private final static SpecialPlayerListener playerListener = new SpecialPlayerListener();
     private final static SpecialBlockListener blockListener = new SpecialBlockListener();
     private final static SpecialEntityListener entityListener = new SpecialEntityListener();
+    private final static SpecialServerListener serverListener = new SpecialServerListener();
     private static HashMap<World, LightningRunnable> lightningTasks = new HashMap<World, LightningRunnable>();
 
     // Public fields:
@@ -37,6 +44,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
     public static int playerDamageModifier;
     public static boolean playerInvincibleToHisArrows;
     public static HashMap<World, AirBase> airBases = new HashMap<World, AirBase>();
+    public static ArrayList<String> blockedRecipes = new ArrayList<String>();
 
     /**
      * Occurs when plugin is disabled (unloaded from Bukkit).
@@ -78,6 +86,9 @@ public class GlobalQuestPlugin extends JavaPlugin {
         manager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
         manager.registerEvent(Type.EXPLOSION_PRIME, entityListener, Priority.Normal, this);
 
+        // Plugin events:
+        manager.registerEvent(Type.PLUGIN_ENABLE, serverListener, Priority.Highest, this);
+
         // Commands:
         getCommand("dome").setExecutor(new DomeCommand());
 
@@ -98,6 +109,12 @@ public class GlobalQuestPlugin extends JavaPlugin {
         getConfiguration().load();
 
         isDebugEnabled = getConfiguration().getBoolean("IsDebugEnabled", false);
+
+        List<Object> blockedRecipes = getConfiguration().getList("BlockedRecipes");
+
+        for (Object recipe : blockedRecipes) {
+            GlobalQuestPlugin.blockedRecipes.add(recipe.toString());
+        }
         
         playerNameToObserve = getConfiguration().getString("PlayerNameToObserve", "Sinister");
         playerBaseDamage = getConfiguration().getInt("PlayerBaseDamage", 0);
