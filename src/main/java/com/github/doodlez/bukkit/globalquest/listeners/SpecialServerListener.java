@@ -45,8 +45,9 @@ public class SpecialServerListener extends ServerListener {
                             break;
                         }
                     }
-                    if (addItem)
+                    if (addItem) {
                         editedList.add(recipe);
+                    }
                 }
             }
 
