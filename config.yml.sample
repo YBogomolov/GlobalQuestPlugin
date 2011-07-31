@@ -5,11 +5,14 @@ BlockedRecipes:
 Diaries:
     Count: 2
     Diary1:
-        Text: Hello stranger. This is diary number one.
+        Text:
+            - Hello stranger.
+            - This is diary number one.
         UnblockedRecipes:
             - Diamond Pickaxe
     Diary2:
-        Text: This is diary number two.
+        Text:
+            - This is diary number two.
         UnblockedRecipes:
             - Wooden Planks
             - Sugar
