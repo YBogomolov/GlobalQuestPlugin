@@ -132,7 +132,12 @@ public class GlobalQuestPlugin extends JavaPlugin {
 
         for (int index = 0; index < diaryCount; ++index) {
             Diary diary = new Diary();
-            diary.text = getConfiguration().getString("Diaries.Diary" + diary.number + ".Text");
+            List<Object> diaryRaw = getConfiguration().getList("Diaries.Diary" + diary.number + ".Text");
+
+            for (Object diaryPart : diaryRaw) {
+                diary.text.add(diaryPart.toString());
+            }
+
             List<Object> recipes = getConfiguration().getList("Diaries.Diary" + diary.number + ".UnblockedRecipes");
             if (recipes != null)
                 for (Object recipe : recipes) {

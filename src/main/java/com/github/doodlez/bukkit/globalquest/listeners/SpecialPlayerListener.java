@@ -8,8 +8,10 @@ package com.github.doodlez.bukkit.globalquest.listeners;
 import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import com.github.doodlez.bukkit.globalquest.utilities.Diary;
+import com.github.doodlez.bukkit.globalquest.utilities.PrivateFieldHelper;
 import net.minecraft.server.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -37,10 +39,11 @@ public class SpecialPlayerListener extends PlayerListener {
         Player player = event.getPlayer();
 
         if (player.getName().equals(GlobalQuestPlugin.playerNameToObserve)) {
-            System.out.print(player.getName() + " joined the game.");
-
-            // Let's make Isaak Breen invisible to others — i.e. no name over the head, no name in chat.
-            System.out.print("Let's make him disappear...");
+            if (GlobalQuestPlugin.isDebugEnabled) {
+                System.out.print(player.getName() + " joined the game.");
+                // Let's make Isaak Breen invisible to others — i.e. no name over the head, no name in chat.
+                System.out.print("Let's make him disappear...");
+            }
             event.setJoinMessage(null);
             player.setDisplayName("");
 
@@ -63,7 +66,8 @@ public class SpecialPlayerListener extends PlayerListener {
      */
     private void GiveDefaultInventoryTo(Player player) {
         // He should have infinite arrows and a bow to defend himself.
-        System.out.print("Let's give him infinite arrows, a bow and a diamond sword.");
+        if (GlobalQuestPlugin.isDebugEnabled)
+            System.out.print("Let's give him infinite arrows, a bow and a diamond sword.");
         PlayerInventory inventory = player.getInventory();
 
         inventory.remove(Material.ARROW);
@@ -111,7 +115,8 @@ public class SpecialPlayerListener extends PlayerListener {
                     AirBase.toggleGlass(player.getServer().getWorld(airBase.worldName), airBase, true); // ...and re-enabling its with OBSIDIAN!
                 }
             }
-            System.out.print(player.getName() + " left the game.");
+            if (GlobalQuestPlugin.isDebugEnabled)
+                System.out.print(player.getName() + " left the game.");
             event.setQuitMessage(null);
 
             EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
@@ -159,14 +164,26 @@ public class SpecialPlayerListener extends PlayerListener {
 
                 ItemStack itemInHand = player.getItemInHand();
 
-                if (itemInHand.getType() == Material.PAPER) {
+                if (itemInHand.getType() == Material.BOOK) {
                     int diaryNumber = itemInHand.getDurability();
+
+                    if (diaryNumber < 1 && diaryNumber > Diary.totalCount)
+                        return;
 
                     Diary diary = GlobalQuestPlugin.diaries.get(diaryNumber);
 
-                    player.sendMessage(diary.text);
+                    Player[] players = player.getServer().getOnlinePlayers();
+
+                    for (Player playerOnline : players) {
+                        if (playerOnline.getDisplayName() != player.getDisplayName())
+                            playerOnline.sendMessage(ChatColor.GOLD + "Игрок " + player.getDisplayName() + " нашел " + diary.getName());
+                    }
+
+                    for (String diaryPart : diary.text)
+                        player.sendMessage(diaryPart);
+                    
                     for (String recipeName : diary.unblockedRecipes) {
-                        player.sendMessage(recipeName + " was unlocked.");
+                        player.sendMessage(ChatColor.GOLD + "Был открыт рецепт: " + recipeName);
                         UnlockRecipe(recipeName);
                     }
                     diary.unblockedRecipes.clear();
@@ -190,13 +207,14 @@ public class SpecialPlayerListener extends PlayerListener {
         CraftingRecipe recipe = GlobalQuestPlugin.backupRecipes.get(recipeName);
 
         if (!editedList.contains(recipe)) {
-            System.out.print("Adding " + recipeName + " to allowed recipes.");
+            if (GlobalQuestPlugin.isDebugEnabled)
+                System.out.print("Adding " + recipeName + " to allowed recipes.");
             editedList.add(recipe);
             GlobalQuestPlugin.blockedRecipes.remove(recipeName);
         }
 
         try {
-            Diary.setPrivateValue(CraftingManager.class, craftingManager, "b", editedList);
+            PrivateFieldHelper.setPrivateValue(CraftingManager.class, craftingManager, "b", editedList);
         }
         catch (NoSuchFieldException e) {
             e.printStackTrace();

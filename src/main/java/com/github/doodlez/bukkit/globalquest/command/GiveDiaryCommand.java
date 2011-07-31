@@ -40,7 +40,8 @@ public class GiveDiaryCommand implements CommandExecutor {
                         return false;
                     }
 
-                    ItemStack diary = new ItemStack(Material.PAPER, 1, durability);
+
+                    ItemStack diary = new ItemStack(Material.BOOK, 1, durability);
                     player.getInventory().addItem(diary);
                     return true;
                 }
