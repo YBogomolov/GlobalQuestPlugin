@@ -8,14 +8,12 @@ package com.github.doodlez.bukkit.globalquest.listeners;
 
 import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.PrivateFieldHelper;
-import net.minecraft.server.CraftingManager;
-import net.minecraft.server.CraftingRecipe;
-import net.minecraft.server.ItemStack;
-import net.minecraft.server.ShapedRecipes;
+import net.minecraft.server.*;
 import org.bukkit.Material;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -47,6 +45,9 @@ public class SpecialServerListener extends ServerListener {
                         else {
                             editedList.add(recipe);
                         }
+                    }
+                    if (recipe instanceof ShapelessRecipes) {
+                        editedList.add(recipe);
                     }
                 }
 
