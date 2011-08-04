@@ -10,12 +10,13 @@ import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
 import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityListener;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 /**
  * Class that handles Entity-to-Entity interactions and applies appropriate treats.
@@ -195,6 +196,24 @@ public class SpecialEntityListener extends EntityListener {
             }
             else {
                 event.setCancelled(true);
+            }
+        }
+    }
+
+    /**
+     * Handles Isaak's death and removes any drops from him.
+     * @param event Entity death event.
+     */
+    @Override
+    public void onEntityDeath(EntityDeathEvent event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof Player) {
+            Player player = (Player)entity;
+
+            // Isaak Breen
+            if (player.getName().equals("")) {
+                List<ItemStack> drops = event.getDrops();
+                drops.clear();
             }
         }
     }

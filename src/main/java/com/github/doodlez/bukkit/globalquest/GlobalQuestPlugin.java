@@ -95,6 +95,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
 
         // Entity events:
         manager.registerEvent(Type.ENTITY_DAMAGE, entityListener, Priority.Normal, this);
+        manager.registerEvent(Type.ENTITY_DEATH, entityListener, Priority.High, this);
         manager.registerEvent(Type.EXPLOSION_PRIME, entityListener, Priority.Normal, this);
 
         // Plugin events:
