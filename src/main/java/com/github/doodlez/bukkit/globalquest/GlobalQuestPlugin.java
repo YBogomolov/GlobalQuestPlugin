@@ -50,6 +50,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
     public static int playerBaseDamage;
     public static int playerDamageModifier;
     public static boolean playerInvincibleToHisArrows;
+    public static int jetpackId;
     public static HashMap<World, AirBase> airBases = new HashMap<World, AirBase>();
 
     public static ArrayList<String> blockedRecipes = new ArrayList<String>();
@@ -152,6 +153,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
         playerBaseDamage = getConfiguration().getInt("PlayerBaseDamage", 0);
         playerDamageModifier = getConfiguration().getInt("PlayerDamageModifier", 0);
         playerInvincibleToHisArrows = getConfiguration().getBoolean("PlayerInvincibleToHisArrows", false);
+        jetpackId = getConfiguration().getInt("JetpackId", 0);
 
         try {
             int worldCount = getConfiguration().getInt("AirBase.WorldCount", 0);
@@ -231,6 +233,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
         getConfiguration().setProperty("PlayerBaseDamage", playerBaseDamage);
         getConfiguration().setProperty("PlayerDamageModifier", playerDamageModifier);
         getConfiguration().setProperty("PlayerInvincibleToHisArrows", playerInvincibleToHisArrows);
+        getConfiguration().setProperty("JetpackID", jetpackId);
 
         getConfiguration().setProperty("AirBase.WorldCount", airBases.size());
 

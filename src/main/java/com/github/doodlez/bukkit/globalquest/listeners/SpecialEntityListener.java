@@ -14,7 +14,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.entity.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
 
@@ -154,9 +156,34 @@ public class SpecialEntityListener extends EntityListener {
                 }
             }
 
-            // The same — for fall and fire damage:
-            if ((event.getCause().equals(EntityDamageEvent.DamageCause.FALL))
-                || (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE))
+            // Disable damage for jetpack and set half damage for general fall:
+            if (event.getCause().equals(EntityDamageEvent.DamageCause.FALL)) {
+                EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
+                if (e.getEntity() instanceof Player) {
+                    Player damagee = (Player)e.getEntity();
+                    PlayerInventory inventory = damagee.getInventory();
+                    ItemStack armorSlot = inventory.getChestplate();
+                                       
+                    if (armorSlot.getType().getId() == GlobalQuestPlugin.jetpackId) {
+                        event.setDamage(0);
+                    }
+                    else {
+                         // Original damage value:
+                        int previousDamage = e.getDamage();
+
+                         // If Isaak Breen is the damagee, he should receive half of the damage:
+                        if (damagee.getName().equals("")) {
+                            e.setDamage(previousDamage / 2);
+                        }
+                        else {
+                            e.setDamage(previousDamage);
+                        }
+                    }
+                }
+            }
+
+            // The same — for fire damage:
+            if ((event.getCause().equals(EntityDamageEvent.DamageCause.FIRE))
                 || (event.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK))) {
                 EntityDamageByEntityEvent e = (EntityDamageByEntityEvent)event;
                 if (e.getEntity() instanceof Player) {
