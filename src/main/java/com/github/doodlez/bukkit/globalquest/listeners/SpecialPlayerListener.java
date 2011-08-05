@@ -78,16 +78,9 @@ public class SpecialPlayerListener extends PlayerListener {
         ItemStack bowStack = new ItemStack(Material.BOW, 1);
         ItemStack swordStack = new ItemStack(Material.DIAMOND_SWORD, 1);
 
-        ItemStack paper1 = new ItemStack(Material.PAPER, 1);
-        paper1.setDurability((short)1);
-        ItemStack paper2 = new ItemStack(Material.PAPER, 1);
-        paper2.setDurability((short)2);
-
         inventory.addItem(bowStack);
         inventory.addItem(arrowStack);
         inventory.addItem(swordStack);
-        inventory.addItem(paper1);
-        inventory.addItem(paper2);
     }
 
     /**
