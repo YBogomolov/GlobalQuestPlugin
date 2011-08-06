@@ -6,9 +6,7 @@
 package com.github.doodlez.bukkit.globalquest.listeners;
 
 import com.github.doodlez.bukkit.globalquest.GlobalQuestPlugin;
-import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
-import com.github.doodlez.bukkit.globalquest.utilities.Diary;
-import com.github.doodlez.bukkit.globalquest.utilities.PrivateFieldHelper;
+import com.github.doodlez.bukkit.globalquest.utilities.*;
 import net.minecraft.server.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +18,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -66,21 +65,26 @@ public class SpecialPlayerListener extends PlayerListener {
      */
     private void GiveDefaultInventoryTo(Player player) {
         // He should have infinite arrows and a bow to defend himself.
-        if (GlobalQuestPlugin.isDebugEnabled)
-            System.out.print("Let's give him infinite arrows, a bow and a diamond sword.");
         PlayerInventory inventory = player.getInventory();
 
-        inventory.remove(Material.ARROW);
-        inventory.remove(Material.BOW);
-        inventory.remove(Material.DIAMOND_SWORD);
+        for (Field field : IsaakInventory.class.getFields()) {
+            try {
+                InventoryPair inventoryPair = (InventoryPair) field.get(GlobalQuestPlugin.isaakInventory);
 
-        ItemStack arrowStack = new ItemStack(Material.ARROW, 64);
-        ItemStack bowStack = new ItemStack(Material.BOW, 1);
-        ItemStack swordStack = new ItemStack(Material.DIAMOND_SWORD, 1);
+                if (inventory.contains(inventoryPair.ID))
+                    inventory.remove(inventoryPair.ID);
+                
+                ItemStack item = new ItemStack(inventoryPair.ID, inventoryPair.Count);
+                inventory.addItem(item);
 
-        inventory.addItem(bowStack);
-        inventory.addItem(arrowStack);
-        inventory.addItem(swordStack);
+            }
+            catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            catch (NullPointerException e) {
+                System.out.print(e.getMessage());
+            }
+        }
     }
 
     /**

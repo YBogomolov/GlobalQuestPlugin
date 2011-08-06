@@ -11,10 +11,7 @@ import com.github.doodlez.bukkit.globalquest.listeners.SpecialBlockListener;
 import com.github.doodlez.bukkit.globalquest.listeners.SpecialEntityListener;
 import com.github.doodlez.bukkit.globalquest.listeners.SpecialPlayerListener;
 import com.github.doodlez.bukkit.globalquest.listeners.SpecialServerListener;
-import com.github.doodlez.bukkit.globalquest.utilities.AirBase;
-import com.github.doodlez.bukkit.globalquest.utilities.Diary;
-import com.github.doodlez.bukkit.globalquest.utilities.LightningPairedBlocks;
-import com.github.doodlez.bukkit.globalquest.utilities.LightningRunnable;
+import com.github.doodlez.bukkit.globalquest.utilities.*;
 import net.minecraft.server.CraftingRecipe;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -26,6 +23,7 @@ import org.bukkit.util.config.ConfigurationNode;
 import sun.security.krb5.Config;
 
 import javax.xml.transform.sax.SAXTransformerFactory;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +48,7 @@ public class GlobalQuestPlugin extends JavaPlugin {
     public static int playerBaseDamage;
     public static int playerDamageModifier;
     public static boolean playerInvincibleToHisArrows;
-    public static int jetpackId;
+    public static IsaakInventory isaakInventory;
     public static HashMap<World, AirBase> airBases = new HashMap<World, AirBase>();
 
     public static ArrayList<String> blockedRecipes = new ArrayList<String>();
@@ -153,7 +151,20 @@ public class GlobalQuestPlugin extends JavaPlugin {
         playerBaseDamage = getConfiguration().getInt("PlayerBaseDamage", 0);
         playerDamageModifier = getConfiguration().getInt("PlayerDamageModifier", 0);
         playerInvincibleToHisArrows = getConfiguration().getBoolean("PlayerInvincibleToHisArrows", false);
-        jetpackId = getConfiguration().getInt("JetpackId", 0);
+        isaakInventory = new IsaakInventory();
+
+        for (Field field : IsaakInventory.class.getFields()) {
+            System.out.print(field.getName());
+            int id = getConfiguration().getInt("DefaultInventory." + field.getName() + ".ID", 1);
+            int count = getConfiguration().getInt("DefaultInventory." + field.getName() + ".Count", 0);
+            InventoryPair invPair = new InventoryPair(id, count);
+            try {
+                field.set(isaakInventory, invPair);
+            }
+            catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
 
         try {
             int worldCount = getConfiguration().getInt("AirBase.WorldCount", 0);
@@ -233,7 +244,17 @@ public class GlobalQuestPlugin extends JavaPlugin {
         getConfiguration().setProperty("PlayerBaseDamage", playerBaseDamage);
         getConfiguration().setProperty("PlayerDamageModifier", playerDamageModifier);
         getConfiguration().setProperty("PlayerInvincibleToHisArrows", playerInvincibleToHisArrows);
-        getConfiguration().setProperty("JetpackID", jetpackId);
+
+        for (Field field : IsaakInventory.class.getFields()) {
+            try {
+                InventoryPair inventoryPair = (InventoryPair) field.get(isaakInventory);
+                getConfiguration().setProperty("DefaultInventory." + field.getName() + ".ID", inventoryPair.ID);
+                getConfiguration().setProperty("DefaultInventory." + field.getName() + ".Count", inventoryPair.Count);
+            }
+            catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
 
         getConfiguration().setProperty("AirBase.WorldCount", airBases.size());
 

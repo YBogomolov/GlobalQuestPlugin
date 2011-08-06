@@ -29,11 +29,12 @@ public class DomeCommand implements CommandExecutor {
         if (commandSender instanceof Player) {
             Player player = (Player)commandSender;
             if (player.getName().equals("")) {
+                System.out.println(player.getWorld().getName());
                 AirBase airBase = GlobalQuestPlugin.airBases.get(player.getWorld());
+
                 if (airBase == null)
                     return false;
-
-
+                
                 boolean emergency = false;
                 if (args.length != 0)
                     emergency = args[0].equals("emergency");

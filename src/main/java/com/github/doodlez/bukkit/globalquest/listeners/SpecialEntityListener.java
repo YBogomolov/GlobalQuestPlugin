@@ -164,7 +164,7 @@ public class SpecialEntityListener extends EntityListener {
                     PlayerInventory inventory = damagee.getInventory();
                     ItemStack armorSlot = inventory.getChestplate();
                                        
-                    if (armorSlot.getType().getId() == GlobalQuestPlugin.jetpackId) {
+                    if (armorSlot.getType().getId() == GlobalQuestPlugin.isaakInventory.Jetpack.ID) {
                         event.setDamage(0);
                     }
                     else {
